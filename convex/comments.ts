@@ -1,3 +1,4 @@
+import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUser, pushNotification } from "./helpers";
@@ -17,6 +18,66 @@ export const listByPost = query({
         author: await ctx.db.get(comment.userId),
       })),
     );
+  },
+});
+
+export const listByAuthor = query({
+  args: { userId: v.id("users"), limit: v.optional(v.number()) },
+  handler: async (ctx, { userId, limit = 40 }) => {
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .take(limit);
+
+    return Promise.all(
+      comments.map(async (comment) => {
+        const author = await ctx.db.get(comment.userId);
+        const post = await ctx.db.get(comment.postId);
+        return {
+          ...comment,
+          author,
+          post: post
+            ? { _id: post._id, content: post.content.slice(0, 160) }
+            : null,
+        };
+      }),
+    );
+  },
+});
+
+/** Profile "Replies" tab — paginated comments */
+export const byAuthorPaginated = query({
+  args: {
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { userId, paginationOpts }) => {
+    const batch = await ctx.db
+      .query("comments")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .paginate(paginationOpts);
+
+    const page = await Promise.all(
+      batch.page.map(async (comment) => {
+        const author = await ctx.db.get(comment.userId);
+        const post = await ctx.db.get(comment.postId);
+        return {
+          ...comment,
+          author,
+          post: post
+            ? {
+                _id: post._id,
+                content: post.content.slice(0, 120),
+                authorId: post.authorId,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return { page, continueCursor: batch.continueCursor, isDone: batch.isDone };
   },
 });
 

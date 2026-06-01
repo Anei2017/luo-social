@@ -86,10 +86,13 @@ export const updateProfile = mutation({
     skills: v.optional(v.array(v.string())),
     clan: v.optional(v.string()),
     hometown: v.optional(v.string()),
+    currentLocation: v.optional(v.string()),
+    occupation: v.optional(v.string()),
     interests: v.optional(v.array(v.string())),
     language: v.optional(
       v.union(v.literal("english"), v.literal("dholuo"), v.literal("both")),
     ),
+    proudLuo: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const me = await getCurrentUser(ctx);
@@ -115,7 +118,14 @@ export const updateProfile = mutation({
     if (args.hometown !== undefined) {
       patch.hometown = args.hometown.trim() || undefined;
     }
+    if (args.currentLocation !== undefined) {
+      patch.currentLocation = args.currentLocation.trim() || undefined;
+    }
+    if (args.occupation !== undefined) {
+      patch.occupation = args.occupation.trim() || undefined;
+    }
     if (args.interests !== undefined) patch.interests = args.interests;
+    if (args.proudLuo !== undefined) patch.proudLuo = args.proudLuo;
     if (args.language !== undefined) patch.language = args.language;
 
     await ctx.db.patch(me._id, patch);

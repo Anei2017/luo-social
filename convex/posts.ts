@@ -271,6 +271,30 @@ export const byAuthor = query({
   },
 });
 
+/** Profile infinite scroll — paginated posts by author */
+export const byAuthorPaginated = query({
+  args: {
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, { userId, paginationOpts }) => {
+    const me = await getCurrentUser(ctx);
+    const batch = await ctx.db
+      .query("posts")
+      .withIndex("by_author", (q) => q.eq("authorId", userId))
+      .order("desc")
+      .paginate(paginationOpts);
+
+    const page = (
+      await Promise.all(
+        batch.page.map((post) => enrichPost(ctx, post._id, me?._id ?? null)),
+      )
+    ).filter(Boolean);
+
+    return { page, continueCursor: batch.continueCursor, isDone: batch.isDone };
+  },
+});
+
 export const discover = query({
   args: {},
   handler: async (ctx) => {

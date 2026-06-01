@@ -12,10 +12,14 @@ export default defineSchema({
     skills: v.optional(v.array(v.string())),
     clan: v.optional(v.string()),
     hometown: v.optional(v.string()),
+    currentLocation: v.optional(v.string()),
+    occupation: v.optional(v.string()),
     interests: v.optional(v.array(v.string())),
     language: v.optional(
       v.union(v.literal("english"), v.literal("dholuo"), v.literal("both")),
     ),
+    isVerified: v.optional(v.boolean()),
+    proudLuo: v.optional(v.boolean()),
     createdAt: v.number(),
   })
     .index("by_clerk", ["clerkId"])
@@ -77,7 +81,9 @@ export default defineSchema({
     userId: v.id("users"),
     content: v.string(),
     createdAt: v.number(),
-  }).index("by_post", ["postId", "createdAt"]),
+  })
+    .index("by_post", ["postId", "createdAt"])
+    .index("by_user", ["userId", "createdAt"]),
 
   follows: defineTable({
     followerId: v.id("users"),

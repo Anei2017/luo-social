@@ -39,6 +39,11 @@ export type ConvexUser = {
   skills?: string[];
   clan?: string;
   hometown?: string;
+  currentLocation?: string;
+  occupation?: string;
   interests?: string[];
   language?: string;
+  isVerified?: boolean;
+  proudLuo?: boolean;
+  createdAt?: number;
 };
