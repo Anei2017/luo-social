@@ -10,7 +10,7 @@ export function LandingAuthButtons() {
   if (isSignedIn) {
     return (
       <Link
-        href="/feed"
+        href="/feeds"
         className="min-h-11 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary"
       >
         Open app
@@ -44,10 +44,10 @@ export function LandingHeroCta() {
   if (isSignedIn) {
     return (
       <Link
-        href="/feed"
+        href="/feeds"
         className="font-label inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-sm font-bold tracking-wide text-on-primary uppercase shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto"
       >
-        Go to feed
+        Go to feeds
         <Icon name="arrow_forward" />
       </Link>
     );

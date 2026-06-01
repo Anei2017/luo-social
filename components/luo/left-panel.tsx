@@ -7,6 +7,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { avatarUrl } from "@/lib/avatar";
+import { CommunityLinksPanel } from "./community-links-panel";
 
 export function LeftPanel() {
   const { user: clerkUser } = useUser();
@@ -18,6 +19,14 @@ export function LeftPanel() {
   const following = useQuery(
     api.follows.listFollowing,
     profile ? { userId: profile._id as Id<"users">, limit: 6 } : "skip",
+  );
+  const members = useQuery(
+    api.users.listMembers,
+    profile ? { limit: 6 } : "skip",
+  );
+  const suggestions = useQuery(
+    api.users.peopleYouMayKnow,
+    profile ? { limit: 5 } : "skip",
   );
 
   const name = profile?.displayName ?? clerkUser?.fullName ?? "Your name";
@@ -82,6 +91,97 @@ export function LeftPanel() {
           </div>
         </div>
       )}
+
+      <CommunityLinksPanel />
+
+      {suggestions && suggestions.length > 0 && (
+        <div className="card-dark p-5">
+          <h3 className="font-body mb-3 text-sm font-bold text-on-surface">
+            People you may know
+          </h3>
+          <ul className="space-y-3">
+            {suggestions.map((person) => (
+              <li key={person._id}>
+                <Link
+                  href={`/profile/${person.username}`}
+                  className="flex items-center gap-3"
+                >
+                  <div className="relative h-9 w-9 overflow-hidden rounded-full">
+                    <Image
+                      src={avatarUrl(person)}
+                      alt=""
+                      fill
+                      unoptimized
+                      sizes="36px"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{person.displayName}</p>
+                    <p className="text-xs text-on-surface-dim">@{person.username}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="card-dark p-5">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h3 className="font-body text-sm font-bold text-on-surface">
+            Members
+          </h3>
+          <Link href="/friends" className="text-xs font-semibold text-primary">
+            Friends
+          </Link>
+        </div>
+        {members === undefined && (
+          <p className="text-xs text-on-surface-dim">Loading…</p>
+        )}
+        {members?.length === 0 && (
+          <p className="text-xs text-on-surface-dim">You&apos;re the first member here.</p>
+        )}
+        <ul className="space-y-3">
+          {members?.map((person) => (
+            <li key={person._id} className="flex items-center gap-2">
+              <Link
+                href={`/profile/${person.username}`}
+                className="flex min-w-0 flex-1 items-center gap-3"
+              >
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full">
+                  <Image
+                    src={avatarUrl(person)}
+                    alt=""
+                    fill
+                    unoptimized
+                    sizes="36px"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-on-surface">
+                    {person.displayName}
+                  </p>
+                  <p className="text-xs text-on-surface-dim">@{person.username}</p>
+                </div>
+              </Link>
+              <Link
+                href={`/messages?with=${person.username}`}
+                className="shrink-0 text-xs font-bold text-primary"
+              >
+                Chat
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {(members?.length ?? 0) > 0 && (
+          <Link
+            href="/messages"
+            className="mt-3 block text-center text-xs font-medium text-on-surface-muted hover:text-primary"
+          >
+            See all members →
+          </Link>
+        )}
+      </div>
 
       <div className="card-dark p-5">
         <h3 className="font-body mb-3 text-sm font-bold text-on-surface">

@@ -19,7 +19,7 @@ function DiscoverGrid() {
           Discover creators and stories across LUO SOCIAL.
         </p>
         <Link
-          href="/feed"
+          href="/feeds"
           className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-sm font-bold text-on-primary"
         >
           Back to feed
@@ -50,7 +50,7 @@ function DiscoverGrid() {
                 {post.author?.displayName}
               </span>
             </Link>
-            <Link href={`/feed#post-${post._id}`}>
+            <Link href={`/feeds#post-${post._id}`}>
               <p className="line-clamp-4 text-sm text-on-surface-muted">
                 {post.content}
               </p>

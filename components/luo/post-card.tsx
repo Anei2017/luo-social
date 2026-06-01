@@ -10,6 +10,15 @@ import type { FeedPost } from "@/lib/types";
 import { avatarUrl } from "@/lib/avatar";
 import { formatConvexError } from "@/lib/convex-errors";
 import { CommentThread } from "./comment-thread";
+import { PostLikers } from "./post-likers";
+import { PostPoll } from "./post-poll";
+import { PostReactionsBar } from "./post-reactions-bar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Icon } from "./icon";
 
 function timeAgo(ts: number) {
@@ -29,12 +38,11 @@ export function PostCard({
   post: FeedPost;
   currentUserId?: string;
 }) {
-  const toggleLike = useMutation(api.likes.toggle);
+  const reportPost = useMutation(api.safety.report);
   const removePost = useMutation(api.posts.remove);
-  const [liking, setLiking] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [likersOpen, setLikersOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const isAuthor = currentUserId && post.author?._id === currentUserId;
@@ -43,21 +51,23 @@ export function PostCard({
     : "/profile";
   const postId = post._id as Id<"posts">;
 
-  async function onLike() {
-    setLiking(true);
-    setActionError(null);
+  async function onReport() {
+    const reason = prompt("Why are you reporting this post?");
+    if (!reason?.trim()) return;
     try {
-      await toggleLike({ postId });
+      await reportPost({
+        postId,
+        reason: reason.trim(),
+        targetUserId: post.author?._id as Id<"users"> | undefined,
+      });
+      alert("Report submitted. Thank you.");
     } catch (err) {
       setActionError(formatConvexError(err));
-    } finally {
-      setLiking(false);
     }
   }
 
   async function onDelete() {
     if (!confirm("Delete this post?")) return;
-    setMenuOpen(false);
     setActionError(null);
     try {
       await removePost({ postId });
@@ -67,7 +77,7 @@ export function PostCard({
   }
 
   async function onShare() {
-    const url = `${window.location.origin}/feed#post-${post._id}`;
+    const url = `${window.location.origin}/feeds#post-${post._id}`;
     try {
       if (navigator.share) {
         await navigator.share({
@@ -114,39 +124,43 @@ export function PostCard({
             </p>
           </div>
         </Link>
-        <div className="relative">
-          <button
-            type="button"
+        <DropdownMenu>
+          <DropdownMenuTrigger
             aria-label="More options"
-            onClick={() => setMenuOpen((v) => !v)}
             className="text-on-surface-muted hover:text-on-surface"
           >
             <Icon name="more_horiz" />
-          </button>
-          {menuOpen && (
-            <div className="absolute top-8 right-0 z-20 min-w-[140px] rounded-xl border border-outline bg-surface py-1 shadow-xl">
-              {isAuthor && (
-                <button
-                  type="button"
-                  onClick={onDelete}
-                  className="block w-full px-4 py-2 text-left text-sm text-error hover:bg-surface-elevated"
-                >
-                  Delete post
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onShare();
-                }}
-                className="block w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-surface-elevated"
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="min-w-[140px] rounded-xl border border-outline bg-surface text-on-surface shadow-xl"
+          >
+            {isAuthor && (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={onDelete}
+                className="text-error focus:bg-surface-elevated focus:text-error"
               >
-                Share
-              </button>
-            </div>
-          )}
-        </div>
+                Delete post
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              onClick={onShare}
+              className="focus:bg-surface-elevated focus:text-on-surface"
+            >
+              Share
+            </DropdownMenuItem>
+            {!isAuthor && (
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={onReport}
+                className="text-error focus:bg-surface-elevated focus:text-error"
+              >
+                Report
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {post.content.trim() && post.content.trim() !== " " && (
@@ -154,7 +168,29 @@ export function PostCard({
           <p className="font-body text-sm leading-relaxed text-on-surface whitespace-pre-wrap">
             {post.content}
           </p>
+          {post.hashtags && post.hashtags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {post.hashtags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/tags/${tag}`}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          )}
+          {post.language === "dholuo" && (
+            <span className="mt-2 inline-block text-[10px] font-medium text-primary">
+              Dholuo
+            </span>
+          )}
         </div>
+      )}
+
+      {post.poll && post.poll.options.length >= 2 && (
+        <PostPoll postId={postId} poll={post.poll} />
       )}
 
       {post.imageUrl && (
@@ -171,21 +207,13 @@ export function PostCard({
       )}
 
       <div className="flex flex-wrap items-center gap-2 px-4 pb-3 sm:gap-4 sm:px-5">
-        <button
-          type="button"
-          onClick={onLike}
-          disabled={liking}
-          className={`flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold transition-colors active:bg-surface-elevated/50 ${
-            post.likedByMe ? "text-primary" : "text-on-surface-muted hover:text-primary"
-          }`}
-        >
-          <Icon name="favorite" filled={post.likedByMe} className="text-xl" />
-          {post.likeCount > 0 ? (
-            <span>{post.likeCount}</span>
-          ) : (
-            <span>Like</span>
-          )}
-        </button>
+        <PostReactionsBar
+          postId={postId}
+          likeCount={post.likeCount}
+          likedByMe={post.likedByMe}
+          myReaction={post.myReaction}
+          onOpenLikers={() => setLikersOpen(true)}
+        />
         <button
           type="button"
           onClick={onCommentClick}
@@ -228,6 +256,13 @@ export function PostCard({
         currentUserId={currentUserId}
         expanded={commentsOpen || (post.commentCount ?? 0) > 0}
         onToggleExpand={() => setCommentsOpen((v) => !v)}
+      />
+
+      <PostLikers
+        postId={postId}
+        likeCount={post.likeCount}
+        open={likersOpen}
+        onOpenChange={setLikersOpen}
       />
     </article>
   );

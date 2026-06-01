@@ -1,3 +1,4 @@
+/** @deprecated Use `@/components/profile/ProfilePage` */
 "use client";
 
 import { useState } from "react";
@@ -10,6 +11,9 @@ import type { ConvexUser, FeedPost } from "@/lib/types";
 import { avatarUrl } from "@/lib/avatar";
 import { formatConvexError } from "@/lib/convex-errors";
 import { PostCard } from "./post-card";
+import { FriendActionButton } from "./friend-action-button";
+import { FriendsGrid } from "./friends-grid";
+import { ProfileReels } from "./profile-reels";
 
 export function ProfileView({
   user,
@@ -22,6 +26,9 @@ export function ProfileView({
   const stats = useQuery(api.follows.stats, {
     userId: user._id as Id<"users">,
   });
+  const friendStats = useQuery(api.friends.stats, {
+    userId: user._id as Id<"users">,
+  });
   const isFollowing = useQuery(api.follows.isFollowing, {
     userId: user._id as Id<"users">,
   });
@@ -31,11 +38,23 @@ export function ProfileView({
   });
   const toggleFollow = useMutation(api.follows.toggle);
   const updateProfile = useMutation(api.users.updateProfile);
+  const blockUser = useMutation(api.safety.block);
+  const reportUser = useMutation(api.safety.report);
+  const blocked = useQuery(
+    api.safety.isBlocked,
+    !isOwnProfile ? { userId: user._id as Id<"users"> } : "skip",
+  );
 
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.displayName);
   const [bio, setBio] = useState(user.bio ?? "");
   const [skillsText, setSkillsText] = useState((user.skills ?? []).join(", "));
+  const [clan, setClan] = useState(user.clan ?? "");
+  const [hometown, setHometown] = useState(user.hometown ?? "");
+  const [interestsText, setInterestsText] = useState((user.interests ?? []).join(", "));
+  const [language, setLanguage] = useState<"english" | "dholuo" | "both">(
+    (user.language as "english" | "dholuo" | "both") ?? "both",
+  );
   const [saving, setSaving] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,10 +81,19 @@ export function ProfileView({
         .map((s) => s.trim())
         .filter(Boolean)
         .slice(0, 12);
+      const interests = interestsText
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 12);
       await updateProfile({
         displayName: displayName.trim(),
         bio: bio.trim(),
         skills,
+        clan: clan.trim(),
+        hometown: hometown.trim(),
+        interests,
+        language,
       });
       setEditing(false);
     } catch (err) {
@@ -111,6 +139,35 @@ export function ProfileView({
                 placeholder="Skills (comma separated)"
                 className="w-full rounded-xl border border-outline bg-surface-elevated px-4 py-2 text-on-surface"
               />
+              <input
+                value={clan}
+                onChange={(e) => setClan(e.target.value)}
+                placeholder="Clan (e.g. Jokanyamwezi)"
+                className="w-full rounded-xl border border-outline bg-surface-elevated px-4 py-2 text-on-surface"
+              />
+              <input
+                value={hometown}
+                onChange={(e) => setHometown(e.target.value)}
+                placeholder="Hometown"
+                className="w-full rounded-xl border border-outline bg-surface-elevated px-4 py-2 text-on-surface"
+              />
+              <input
+                value={interestsText}
+                onChange={(e) => setInterestsText(e.target.value)}
+                placeholder="Interests (comma separated)"
+                className="w-full rounded-xl border border-outline bg-surface-elevated px-4 py-2 text-on-surface"
+              />
+              <select
+                value={language}
+                onChange={(e) =>
+                  setLanguage(e.target.value as "english" | "dholuo" | "both")
+                }
+                className="w-full rounded-xl border border-outline bg-surface-elevated px-4 py-2 text-sm text-on-surface"
+              >
+                <option value="both">English & Dholuo</option>
+                <option value="english">English</option>
+                <option value="dholuo">Dholuo</option>
+              </select>
               <div className="flex gap-2">
                 <button
                   type="submit"
@@ -135,6 +192,11 @@ export function ProfileView({
               {user.bio && (
                 <p className="mt-4 text-sm text-on-surface-muted">{user.bio}</p>
               )}
+              {(user.clan || user.hometown) && (
+                <p className="mt-2 text-xs text-on-surface-dim">
+                  {[user.clan, user.hometown].filter(Boolean).join(" · ")}
+                </p>
+              )}
               {user.skills && user.skills.length > 0 && (
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {user.skills.map((s) => (
@@ -149,7 +211,11 @@ export function ProfileView({
               )}
             </>
           )}
-          <div className="mt-6 flex justify-center gap-10">
+          <div className="mt-6 flex justify-center gap-6 sm:gap-10">
+            <div>
+              <p className="text-xl font-bold">{friendStats?.friends ?? 0}</p>
+              <p className="text-xs text-on-surface-dim">Friends</p>
+            </div>
             <div>
               <p className="text-xl font-bold">{stats?.followers ?? 0}</p>
               <p className="text-xs text-on-surface-dim">Followers</p>
@@ -172,6 +238,7 @@ export function ProfileView({
               )
             ) : (
               <>
+                <FriendActionButton otherUserId={user._id as Id<"users">} />
                 <button
                   type="button"
                   onClick={onFollow}
@@ -179,7 +246,7 @@ export function ProfileView({
                   className={`min-h-11 rounded-full px-6 py-2.5 text-sm font-bold ${
                     isFollowing
                       ? "border border-outline bg-surface-elevated text-on-surface"
-                      : "bg-primary text-on-primary"
+                      : "border border-outline text-on-surface-muted"
                   }`}
                 >
                   {followLoading
@@ -194,13 +261,61 @@ export function ProfileView({
                 >
                   Message
                 </Link>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const reason = prompt("Report this user (reason):");
+                    if (!reason?.trim()) return;
+                    try {
+                      await reportUser({
+                        targetUserId: user._id as Id<"users">,
+                        reason: reason.trim(),
+                      });
+                      alert("Report submitted.");
+                    } catch (err) {
+                      setError(formatConvexError(err));
+                    }
+                  }}
+                  className="min-h-11 rounded-full border border-outline px-4 py-2.5 text-xs font-semibold text-on-surface-dim"
+                >
+                  Report
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!confirm("Block this user?")) return;
+                    try {
+                      await blockUser({ userId: user._id as Id<"users"> });
+                      setError(null);
+                    } catch (err) {
+                      setError(formatConvexError(err));
+                    }
+                  }}
+                  className="min-h-11 rounded-full border border-error/40 px-4 py-2.5 text-xs font-semibold text-error"
+                >
+                  {blocked ? "Blocked" : "Block"}
+                </button>
               </>
             )}
+            {isOwnProfile && (
+              <Link
+                href="/friends"
+                className="flex min-h-11 items-center justify-center rounded-full border border-outline px-6 py-2.5 text-sm font-semibold text-on-surface-muted"
+              >
+                Manage friends
+              </Link>
+            )}
             <Link
-              href="/feed"
+              href="/feeds"
               className="flex min-h-11 items-center justify-center rounded-full border border-outline px-6 py-2.5 text-sm font-semibold text-on-surface-muted"
             >
-              Feed
+              Feeds
+            </Link>
+            <Link
+              href="/reels"
+              className="flex min-h-11 items-center justify-center rounded-full border border-primary/50 bg-primary/10 px-6 py-2.5 text-sm font-semibold text-primary"
+            >
+              Reels
             </Link>
           </div>
           {error && (
@@ -210,6 +325,22 @@ export function ProfileView({
           )}
         </div>
       </div>
+
+      <ProfileReels
+        userId={user._id as Id<"users">}
+        username={user.username}
+        isOwnProfile={isOwnProfile}
+      />
+
+      <FriendsGrid
+        userId={user._id as Id<"users">}
+        title={isOwnProfile ? "Your friends" : `${user.displayName}'s friends`}
+        emptyMessage={
+          isOwnProfile
+            ? "Add friends from profiles — they'll appear here for everyone to see."
+            : "No friends to show yet."
+        }
+      />
 
       <h2 className="px-1 text-lg font-bold text-on-surface">Posts</h2>
       {posts === undefined && (

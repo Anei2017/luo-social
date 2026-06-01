@@ -3,8 +3,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ui } from "@clerk/ui";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { ConvexRoot } from "@/components/providers/convex-root";
+import { UiProviders } from "@/components/providers/ui-providers";
 import { clerkAuthAppearance } from "@/components/luo/auth-layout";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -45,17 +47,14 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={clerkAuthAppearance} ui={ui}>
-      <html lang="en">
-        <head>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0"
-            rel="stylesheet"
-          />
-        </head>
-        <body
-          className={`${bricolage.variable} ${dmSans.variable} min-h-screen-safe antialiased overflow-x-hidden`}
-        >
-          <ConvexRoot>{children}</ConvexRoot>
+      <html
+        lang="en"
+        className={cn("dark font-sans", dmSans.variable, bricolage.variable)}
+      >
+        <body className="min-h-screen-safe overflow-x-hidden antialiased font-body">
+          <UiProviders>
+            <ConvexRoot>{children}</ConvexRoot>
+          </UiProviders>
         </body>
       </html>
     </ClerkProvider>

@@ -1,3 +1,8 @@
+import type { LucideIcon } from "lucide-react";
+import { HelpCircle } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
+import { cn } from "@/lib/utils";
+
 type IconProps = {
   name: string;
   className?: string;
@@ -5,12 +10,16 @@ type IconProps = {
 };
 
 export function Icon({ name, className = "", filled }: IconProps) {
+  const Lucide: LucideIcon = ICON_MAP[name] ?? HelpCircle;
+
   return (
-    <span
-      className={`material-symbols-outlined ${filled ? "filled" : ""} ${className}`}
+    <Lucide
+      className={cn(
+        "inline-block shrink-0",
+        filled && "fill-current",
+        className,
+      )}
       aria-hidden
-    >
-      {name}
-    </span>
+    />
   );
 }

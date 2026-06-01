@@ -148,7 +148,7 @@ Add every variable from `.env.local`:
 |----------|--------|
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk |
 | `CLERK_SECRET_KEY` | Clerk — server only |
-| `NEXT_PUBLIC_CONVEX_URL` | Production Convex URL |
+| `NEXT_PUBLIC_CONVEX_URL` | **Convex** URL only, e.g. `https://sensible-cow-847.convex.cloud` — **not** the Clerk issuer (`*.clerk.accounts.dev`) |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | `/sign-in` |
 | `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | `/sign-up` |
 | `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | `/onboarding` |

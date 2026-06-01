@@ -28,7 +28,7 @@ function NotificationsContent() {
         <div className="min-w-0">
           <h1 className="text-xl font-bold text-on-surface sm:text-2xl">Notifications</h1>
           <p className="mt-1 text-sm text-on-surface-muted">
-            Likes, comments, and new followers
+            Likes, comments, follows, and friend requests
           </p>
         </div>
         <button
@@ -84,10 +84,26 @@ function NotificationsContent() {
               </p>
               {item.postId && (
                 <Link
-                  href="/feed"
+                  href="/feeds"
                   className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
                 >
                   View in feed
+                </Link>
+              )}
+              {(item.type === "friend_request" || item.type === "friend_accept") && (
+                <Link
+                  href="/friends"
+                  className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+                >
+                  View friends
+                </Link>
+              )}
+              {(item.type === "reel_like" || item.type === "reel_comment") && (
+                <Link
+                  href="/reels"
+                  className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+                >
+                  View reels
                 </Link>
               )}
             </div>

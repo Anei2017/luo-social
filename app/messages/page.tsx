@@ -9,8 +9,11 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { AppShell } from "@/components/luo/app-shell";
 import { ChatThread } from "@/components/luo/chat-thread";
+import { MembersDirectory } from "@/components/luo/members-directory";
 import { avatarUrl } from "@/lib/avatar";
 import { Icon } from "@/components/luo/icon";
+
+type InboxTab = "chats" | "members";
 
 function MessagesInbox() {
   const router = useRouter();
@@ -25,6 +28,7 @@ function MessagesInbox() {
   const getOrCreate = useMutation(api.messages.getOrCreate);
 
   const [activeId, setActiveId] = useState<Id<"conversations"> | null>(null);
+  const [tab, setTab] = useState<InboxTab>("chats");
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
@@ -60,8 +64,42 @@ function MessagesInbox() {
       >
         <div className="border-b border-outline-soft px-4 py-4">
           <h1 className="text-lg font-bold text-on-surface">Messages</h1>
-          <p className="text-xs text-on-surface-muted">Chat with people you follow</p>
+          <p className="text-xs text-on-surface-muted">
+            Private chats between any members
+          </p>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setTab("chats")}
+              className={`flex-1 rounded-full py-2 text-xs font-bold ${
+                tab === "chats"
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-elevated text-on-surface-muted"
+              }`}
+            >
+              Chats
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab("members")}
+              className={`flex-1 rounded-full py-2 text-xs font-bold ${
+                tab === "members"
+                  ? "bg-primary text-on-primary"
+                  : "bg-surface-elevated text-on-surface-muted"
+              }`}
+            >
+              All members
+            </button>
+          </div>
         </div>
+        {tab === "members" ? (
+          <MembersDirectory
+            onConversationStarted={(id) => {
+              setActiveId(id);
+              setTab("chats");
+            }}
+          />
+        ) : (
         <ul className="max-h-[min(70vh,640px)] overflow-y-auto">
           {conversations === undefined && (
             <li className="p-4 text-sm text-on-surface-muted">Loading…</li>
@@ -101,13 +139,17 @@ function MessagesInbox() {
             </li>
           ))}
         </ul>
-        <Link
-          href="/discover"
-          className="flex items-center justify-center gap-2 border-t border-outline-soft py-4 text-sm font-medium text-primary"
-        >
-          <Icon name="person_add" />
-          Find people to message
-        </Link>
+        )}
+        {tab === "chats" && (
+          <button
+            type="button"
+            onClick={() => setTab("members")}
+            className="flex w-full items-center justify-center gap-2 border-t border-outline-soft py-4 text-sm font-medium text-primary"
+          >
+            <Icon name="person_add" />
+            Message a member
+          </button>
+        )}
       </aside>
 
       <div className={`min-h-0 min-w-0 flex-1 ${activeId ? "block" : "hidden md:block"}`}>

@@ -28,7 +28,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (existingProfile) {
-      window.location.assign("/feed");
+      window.location.assign("/feeds");
     }
   }, [existingProfile]);
 
@@ -80,7 +80,7 @@ export default function OnboardingPage() {
         SAVE_TIMEOUT_MS,
         "Save timed out. Check your internet, then try again. If this keeps happening, sign out and sign in again after linking Clerk to Convex.",
       );
-      window.location.assign("/feed");
+      window.location.assign("/feeds");
     } catch (err) {
       submittedRef.current = false;
       setError(formatConvexError(err));

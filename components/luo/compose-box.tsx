@@ -9,11 +9,20 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { formatConvexError } from "@/lib/convex-errors";
 import { uploadImageToConvex } from "@/lib/upload-image";
+import { SUGGESTED_HASHTAGS } from "@/lib/hashtags";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Icon } from "./icon";
 
 const TOPICS = ["Community", "Culture", "Music", "Business", "Diaspora"];
+const LANGUAGES = [
+  { id: "both" as const, label: "Both" },
+  { id: "english" as const, label: "English" },
+  { id: "dholuo" as const, label: "Dholuo" },
+];
 
-export function ComposeBox() {
+export function ComposeBox({ onPosted }: { onPosted?: () => void } = {}) {
   const router = useRouter();
   const { isLoading: authLoading, isAuthenticated } = useConvexAuth();
   const profile = useQuery(api.users.current);
@@ -31,9 +40,14 @@ export function ComposeBox() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [language, setLanguage] = useState<"english" | "dholuo" | "both">("both");
+  const [pollMode, setPollMode] = useState(false);
+  const [pollOptions, setPollOptions] = useState(["", ""]);
 
   const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
   const profileReady = profile !== undefined && profile !== null;
+  const validPoll =
+    pollMode && pollOptions.filter((o) => o.trim()).length >= 2;
   const canSubmit =
     !!convexUrl &&
     isAuthenticated &&
@@ -41,7 +55,7 @@ export function ComposeBox() {
     profileReady &&
     !loading &&
     !uploading &&
-    (content.trim().length > 0 || !!pendingFile);
+    (validPoll || content.trim().length > 0 || !!pendingFile);
 
   function applyFile(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -121,11 +135,16 @@ export function ComposeBox() {
         content: content.trim(),
         topic,
         imageStorageId,
+        language,
+        pollOptions: validPoll
+          ? pollOptions.map((o) => o.trim()).filter(Boolean)
+          : undefined,
       });
       setContent("");
       clearPhoto();
       setShowTopics(false);
       setSuccess(true);
+      onPosted?.();
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setError(formatConvexError(err));
@@ -179,7 +198,7 @@ export function ComposeBox() {
       onDragLeave={() => setDragOver(false)}
       onDrop={onDrop}
     >
-      <textarea
+      <Textarea
         value={content}
         onChange={(e) => {
           setContent(e.target.value);
@@ -189,7 +208,7 @@ export function ComposeBox() {
         placeholder="What's on your mind?"
         rows={3}
         disabled={busy}
-        className="font-body w-full resize-none bg-transparent text-sm leading-relaxed text-on-surface placeholder:text-on-surface-dim focus:outline-none disabled:opacity-50"
+        className="min-h-0 resize-none border-0 bg-transparent px-0 py-0 text-sm leading-relaxed text-on-surface shadow-none ring-0 placeholder:text-on-surface-dim focus-visible:ring-0 disabled:opacity-50"
       />
 
       {previewUrl && (
@@ -204,14 +223,16 @@ export function ComposeBox() {
               sizes="640px"
             />
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
             onClick={clearPhoto}
-            className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-on-surface"
+            className="absolute top-2 right-2 bg-background/90 text-on-surface hover:bg-background"
             aria-label="Remove photo"
           >
             <Icon name="close" className="text-lg" />
-          </button>
+          </Button>
         </div>
       )}
 
@@ -225,32 +246,103 @@ export function ComposeBox() {
 
       <div className="mt-4 flex flex-col gap-3 border-t border-outline-soft pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          <button
+          <Button
             type="button"
+            variant="luoGhost"
             onClick={onPickPhoto}
             disabled={busy}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-surface-elevated px-3 py-2.5 text-sm font-semibold text-on-surface-muted transition-colors hover:bg-surface-input hover:text-on-surface active:bg-surface-input disabled:opacity-50"
+            className="min-h-11 gap-2 bg-surface-elevated px-3 py-2.5 hover:bg-surface-input"
           >
             <Icon name="image" className="text-xl text-accent-green" />
             Photo
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="luoGhost"
             onClick={() => setShowTopics((v) => !v)}
             disabled={busy}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-surface-elevated px-3 py-2.5 text-sm font-semibold text-on-surface-muted hover:text-on-surface active:bg-surface-input"
+            className="min-h-11 gap-2 bg-surface-elevated px-3 py-2.5 hover:bg-surface-input"
           >
             <Icon name="sell" className="text-xl text-primary" />
             {topic}
-          </button>
+          </Button>
         </div>
-        <button
+        <Button
           type="submit"
+          variant="luo"
           disabled={!canSubmit}
-          className="min-h-11 w-full rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90 active:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          className="min-h-11 w-full px-6 sm:w-auto"
         >
           {uploading ? "Uploading…" : loading ? "Posting…" : "Post"}
+        </Button>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {LANGUAGES.map((l) => (
+          <button
+            key={l.id}
+            type="button"
+            onClick={() => setLanguage(l.id)}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${
+              language === l.id
+                ? "bg-primary text-on-primary"
+                : "bg-surface-elevated text-on-surface-muted"
+            }`}
+          >
+            {l.label}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setPollMode((v) => !v)}
+          className={`rounded-full px-3 py-1 text-xs font-medium ${
+            pollMode ? "bg-primary text-on-primary" : "bg-surface-elevated text-on-surface-muted"
+          }`}
+        >
+          Poll
         </button>
+      </div>
+
+      {pollMode && (
+        <div className="mt-3 space-y-2">
+          {pollOptions.map((opt, i) => (
+            <Input
+              key={i}
+              value={opt}
+              onChange={(e) => {
+                const next = [...pollOptions];
+                next[i] = e.target.value;
+                setPollOptions(next);
+              }}
+              placeholder={`Option ${i + 1}`}
+              className="h-10 rounded-xl border-outline bg-surface-elevated"
+            />
+          ))}
+          {pollOptions.length < 4 && (
+            <button
+              type="button"
+              onClick={() => setPollOptions([...pollOptions, ""])}
+              className="text-xs font-semibold text-primary"
+            >
+              + Add option
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="mt-2 flex flex-wrap gap-1">
+        {SUGGESTED_HASHTAGS.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            onClick={() =>
+              setContent((c) => (c.includes(`#${tag}`) ? c : `${c} #${tag} `.trim()))
+            }
+            className="text-[10px] font-medium text-primary hover:underline"
+          >
+            #{tag}
+          </button>
+        ))}
       </div>
 
       {showTopics && (

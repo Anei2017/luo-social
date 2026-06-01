@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/luo/app-shell";
-import { ProfileView } from "@/components/luo/profile-view";
+import { ProfilePage } from "@/components/profile/ProfilePage";
 import type { ConvexUser } from "@/lib/types";
 
 function ProfileByUsername() {
@@ -29,7 +29,7 @@ function ProfileByUsername() {
   }
 
   return (
-    <ProfileView
+    <ProfilePage
       user={user as ConvexUser}
       isOwnProfile={me?._id === user._id}
     />

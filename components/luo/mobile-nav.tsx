@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ComposeLink } from "./compose-link";
+import { FEEDS_PATH } from "@/lib/feeds-path";
+import { REELS_PATH } from "@/lib/reels-path";
 import { Icon } from "./icon";
-import { NotificationUnreadDot } from "./notification-unread";
 
 const items = [
-  { href: "/feed", icon: "home", label: "Home" },
+  { href: FEEDS_PATH, icon: "dynamic_feed", label: "Feeds" },
+  { href: REELS_PATH, icon: "movie", label: "Reels" },
+  { href: FEEDS_PATH, icon: "add_circle", label: "Post", accent: true },
   { href: "/messages", icon: "chat", label: "Chat" },
-  { href: "/feed", icon: "add_circle", label: "Post", accent: true },
-  { href: "/notifications", icon: "notifications", label: "Alerts" },
   { href: "/profile", icon: "person", label: "Profile" },
 ] as const;
 
@@ -22,7 +23,9 @@ export function MobileNav() {
         {items.map((item) => {
           const active =
             pathname === item.href ||
-            (item.icon === "home" && pathname === "/feed") ||
+            (item.icon === "dynamic_feed" &&
+              (pathname === FEEDS_PATH || pathname === "/feed")) ||
+            (item.icon === "movie" && pathname.startsWith("/reels")) ||
             (item.icon === "chat" && pathname.startsWith("/messages")) ||
             (item.icon === "person" && pathname.startsWith("/profile"));
           if ("accent" in item && item.accent) {
@@ -44,8 +47,10 @@ export function MobileNav() {
                 active ? "text-primary" : "text-on-surface-muted"
               }`}
             >
-              <Icon name={item.icon} filled={active && item.icon === "home"} />
-              {item.icon === "notifications" && <NotificationUnreadDot />}
+              <Icon
+                name={item.icon}
+                filled={active && item.icon === "dynamic_feed"}
+              />
               <span className="max-w-full truncate text-[10px] font-medium">{item.label}</span>
             </Link>
           );

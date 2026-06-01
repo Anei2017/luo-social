@@ -117,15 +117,25 @@ export function CommentThread({
                     {c.content}
                   </p>
                 </div>
-                {currentUserId === c.userId && (
-                  <button
-                    type="button"
-                    onClick={() => onDelete(c._id as Id<"comments">)}
-                    className="mt-1 text-[10px] font-medium text-on-surface-dim hover:text-error"
-                  >
-                    Delete
-                  </button>
-                )}
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  {currentUserId !== c.userId && c.author?.username && (
+                    <Link
+                      href={`/messages?with=${c.author.username}`}
+                      className="text-[10px] font-medium text-primary hover:underline"
+                    >
+                      Message
+                    </Link>
+                  )}
+                  {currentUserId === c.userId && (
+                    <button
+                      type="button"
+                      onClick={() => onDelete(c._id as Id<"comments">)}
+                      className="text-[10px] font-medium text-on-surface-dim hover:text-error"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
             </li>
           ))}

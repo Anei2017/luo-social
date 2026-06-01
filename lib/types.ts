@@ -10,10 +10,20 @@ export type FeedPost = {
   content: string;
   imageUrl?: string;
   topic?: string;
+  hashtags?: string[];
+  language?: string;
   createdAt: number;
   likeCount: number;
   commentCount: number;
   likedByMe: boolean;
+  myReaction?: string | null;
+  poll?: {
+    options: string[];
+    counts: number[];
+    total: number;
+    myVote?: number;
+    pollEndsAt?: number;
+  } | null;
   author: PostAuthor;
 };
 
@@ -25,5 +35,10 @@ export type ConvexUser = {
   displayName: string;
   bio?: string;
   avatarUrl?: string;
+  coverUrl?: string;
   skills?: string[];
+  clan?: string;
+  hometown?: string;
+  interests?: string[];
+  language?: string;
 };

@@ -9,12 +9,18 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { avatarUrl } from "@/lib/avatar";
 import { LuoLogo } from "./logo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Icon } from "./icon";
 import { ComposeLink } from "./compose-link";
 import { NotificationUnreadCount } from "./notification-unread";
+import { FEEDS_PATH } from "@/lib/feeds-path";
+import { REELS_PATH } from "@/lib/reels-path";
 
 const navIcons = [
-  { href: "/feed", icon: "home", label: "Home" },
+  { href: FEEDS_PATH, icon: "dynamic_feed", label: "Feeds" },
+  { href: REELS_PATH, icon: "movie", label: "Reels" },
+  { href: "/friends", icon: "group", label: "Friends" },
   { href: "/messages", icon: "chat", label: "Messages" },
   { href: "/discover", icon: "explore", label: "Discover" },
   { href: "/notifications", icon: "notifications", label: "Notifications" },
@@ -82,11 +88,11 @@ export function TopNav() {
       <div className="mx-auto max-w-[1600px] px-3 sm:px-4 lg:px-6">
         <div className="flex h-14 items-center justify-between gap-2 sm:h-16 sm:gap-4">
           <div className="relative flex min-w-0 flex-1 items-center gap-2 sm:gap-4 lg:max-w-md">
-            <LuoLogo size="sm" showText href="/feed" />
+            <LuoLogo size="sm" showText href={FEEDS_PATH} />
             <div className="relative hidden min-w-0 flex-1 sm:block">
               <div className="flex items-center gap-2 rounded-full bg-surface px-4 py-2.5">
                 <Icon name="search" className="shrink-0 text-lg text-on-surface-muted" />
-                <input
+                <Input
                   type="search"
                   value={searchQuery}
                   onChange={(e) => {
@@ -95,7 +101,7 @@ export function TopNav() {
                   }}
                   onFocus={() => setSearchOpen(true)}
                   placeholder="Search people"
-                  className="font-body w-full min-w-0 bg-transparent text-base text-on-surface placeholder:text-on-surface-dim focus:outline-none sm:text-sm"
+                  className="h-auto min-h-0 border-0 bg-transparent px-0 py-0 text-base shadow-none ring-0 placeholder:text-on-surface-dim focus-visible:ring-0 sm:text-sm"
                 />
               </div>
               {searchOpen && <SearchResults />}
@@ -114,7 +120,10 @@ export function TopNav() {
                     active ? "text-primary" : "text-on-surface-muted hover:text-on-surface"
                   }`}
                 >
-                  <Icon name={item.icon} filled={active && item.icon === "home"} />
+                  <Icon
+                    name={item.icon}
+                    filled={active && item.icon === "dynamic_feed"}
+                  />
                   {item.icon === "notifications" && <NotificationUnreadCount />}
                 </Link>
               );
@@ -122,15 +131,17 @@ export function TopNav() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <button
+            <Button
               type="button"
+              variant="luoGhost"
+              size="icon"
               aria-label="Search people"
               aria-expanded={mobileSearchOpen}
               onClick={() => setMobileSearchOpen((v) => !v)}
-              className="touch-target flex items-center justify-center rounded-xl text-on-surface-muted hover:text-on-surface sm:hidden"
+              className="touch-target sm:hidden"
             >
               <Icon name="search" className="text-xl" />
-            </button>
+            </Button>
             <ComposeLink className="hidden rounded-full bg-primary px-3 py-2 text-sm font-bold text-on-primary sm:inline-flex sm:px-4 sm:py-2">
               Post
             </ComposeLink>
@@ -149,7 +160,7 @@ export function TopNav() {
           <div className="relative border-t border-outline-soft pb-3 sm:hidden">
             <div className="flex items-center gap-2 rounded-full bg-surface px-4 py-3">
               <Icon name="search" className="shrink-0 text-lg text-on-surface-muted" />
-              <input
+              <Input
                 type="search"
                 autoFocus
                 value={searchQuery}
@@ -158,19 +169,21 @@ export function TopNav() {
                   setSearchOpen(true);
                 }}
                 placeholder="Search people"
-                className="font-body w-full min-w-0 bg-transparent text-base text-on-surface placeholder:text-on-surface-dim focus:outline-none"
+                className="h-auto min-h-0 flex-1 border-0 bg-transparent px-0 py-0 text-base shadow-none ring-0 placeholder:text-on-surface-dim focus-visible:ring-0"
               />
-              <button
+              <Button
                 type="button"
+                variant="luoGhost"
+                size="icon-sm"
                 aria-label="Close search"
                 onClick={() => {
                   setMobileSearchOpen(false);
                   setSearchQuery("");
                 }}
-                className="touch-target flex shrink-0 items-center justify-center text-on-surface-muted"
+                className="touch-target shrink-0"
               >
                 <Icon name="close" />
-              </button>
+              </Button>
             </div>
             <SearchResults className="relative mt-2" />
           </div>
