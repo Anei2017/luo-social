@@ -213,6 +213,12 @@ Update Google/Facebook OAuth redirect URIs to include production Clerk callbacks
 - **Custom LUO sun logo** (SVG)
 - Real-time feed via Convex `useQuery`
 
+## Mobile apps (iOS & Android)
+
+See **[MOBILE.md](./MOBILE.md)** for Capacitor wrappers, PWA install, store costs ($25 Google / $99 Apple), and free APK distribution.
+
+---
+
 ## Next features you can add
 
 - Image uploads (Convex file storage or Uploadthing)

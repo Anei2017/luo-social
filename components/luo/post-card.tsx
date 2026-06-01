@@ -92,7 +92,7 @@ export function PostCard({
 
   return (
     <article id={`post-${post._id}`} className="card-dark overflow-hidden">
-      <div className="flex items-start justify-between gap-3 p-5 pb-3">
+      <div className="flex items-start justify-between gap-2 p-4 pb-3 sm:gap-3 sm:p-5">
         <Link href={profileHref} className="flex items-center gap-3">
           <div className="relative h-11 w-11 overflow-hidden rounded-full bg-surface-elevated">
             <Image
@@ -150,7 +150,7 @@ export function PostCard({
       </div>
 
       {post.content.trim() && post.content.trim() !== " " && (
-        <div className="px-5 pb-4">
+        <div className="px-4 pb-4 sm:px-5">
           <p className="font-body text-sm leading-relaxed text-on-surface whitespace-pre-wrap">
             {post.content}
           </p>
@@ -158,7 +158,7 @@ export function PostCard({
       )}
 
       {post.imageUrl && (
-        <div className="relative mx-5 mb-4 aspect-[4/3] max-h-[420px] overflow-hidden rounded-2xl bg-surface-elevated sm:aspect-video">
+        <div className="relative mx-4 mb-4 aspect-[4/3] max-h-[min(70vh,420px)] overflow-hidden rounded-2xl bg-surface-elevated sm:mx-5 sm:aspect-video">
           <Image
             src={post.imageUrl}
             alt="Post attachment"
@@ -170,12 +170,12 @@ export function PostCard({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-4 px-5 pb-3">
+      <div className="flex flex-wrap items-center gap-2 px-4 pb-3 sm:gap-4 sm:px-5">
         <button
           type="button"
           onClick={onLike}
           disabled={liking}
-          className={`flex items-center gap-1.5 text-sm font-semibold transition-colors ${
+          className={`flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold transition-colors active:bg-surface-elevated/50 ${
             post.likedByMe ? "text-primary" : "text-on-surface-muted hover:text-primary"
           }`}
         >
@@ -189,7 +189,7 @@ export function PostCard({
         <button
           type="button"
           onClick={onCommentClick}
-          className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-muted transition-colors hover:text-on-surface"
+          className="flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-on-surface-muted transition-colors hover:text-on-surface active:bg-surface-elevated/50"
         >
           <Icon name="chat_bubble" className="text-xl" />
           {post.commentCount > 0 ? (
@@ -201,7 +201,7 @@ export function PostCard({
         <button
           type="button"
           onClick={onShare}
-          className="flex items-center gap-1.5 text-sm font-semibold text-on-surface-muted hover:text-on-surface"
+          className="flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-on-surface-muted transition-colors hover:text-on-surface active:bg-surface-elevated/50"
         >
           <Icon name="share" className="text-xl" />
           Share
@@ -215,7 +215,7 @@ export function PostCard({
         {!isAuthor && post.author?.username && (
           <Link
             href={`/messages?with=${post.author.username}`}
-            className="ml-auto flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            className="flex min-h-11 w-full items-center justify-center gap-1 rounded-lg px-2 py-2 text-sm font-semibold text-primary hover:underline active:bg-primary/10 sm:ml-auto sm:w-auto sm:justify-end"
           >
             <Icon name="send" className="text-lg" />
             Message

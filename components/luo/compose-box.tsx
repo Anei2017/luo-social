@@ -171,7 +171,7 @@ export function ComposeBox() {
     <form
       id="compose"
       onSubmit={handleSubmit}
-      className={`card-dark p-5 transition-colors ${dragOver ? "ring-2 ring-primary/50" : ""}`}
+      className={`card-dark p-4 transition-colors sm:p-5 ${dragOver ? "ring-2 ring-primary/50" : ""}`}
       onDragOver={(e) => {
         e.preventDefault();
         setDragOver(true);
@@ -223,13 +223,13 @@ export function ComposeBox() {
         onChange={onFileChange}
       />
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-soft pt-4">
-        <div className="flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-col gap-3 border-t border-outline-soft pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onPickPhoto}
             disabled={busy}
-            className="flex items-center gap-2 rounded-full bg-surface-elevated px-3 py-2 text-sm font-semibold text-on-surface-muted transition-colors hover:bg-surface-input hover:text-on-surface disabled:opacity-50"
+            className="flex min-h-11 items-center gap-2 rounded-full bg-surface-elevated px-3 py-2.5 text-sm font-semibold text-on-surface-muted transition-colors hover:bg-surface-input hover:text-on-surface active:bg-surface-input disabled:opacity-50"
           >
             <Icon name="image" className="text-xl text-accent-green" />
             Photo
@@ -238,7 +238,7 @@ export function ComposeBox() {
             type="button"
             onClick={() => setShowTopics((v) => !v)}
             disabled={busy}
-            className="flex items-center gap-2 rounded-full bg-surface-elevated px-3 py-2 text-sm font-semibold text-on-surface-muted hover:text-on-surface"
+            className="flex min-h-11 items-center gap-2 rounded-full bg-surface-elevated px-3 py-2.5 text-sm font-semibold text-on-surface-muted hover:text-on-surface active:bg-surface-input"
           >
             <Icon name="sell" className="text-xl text-primary" />
             {topic}
@@ -247,7 +247,7 @@ export function ComposeBox() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="min-h-11 w-full rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity hover:opacity-90 active:opacity-80 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
         >
           {uploading ? "Uploading…" : loading ? "Posting…" : "Post"}
         </button>
@@ -276,7 +276,9 @@ export function ComposeBox() {
       )}
 
       <p className="mt-2 text-[11px] text-on-surface-dim">
-        Drag a photo here or tap Photo · Ctrl+Enter to post
+        <span className="sm:hidden">Tap Photo to attach · </span>
+        <span className="hidden sm:inline">Drag a photo here or tap Photo · Ctrl+Enter to post</span>
+        <span className="sm:hidden">Post when ready</span>
       </p>
       {success && (
         <p className="font-body mt-2 text-sm font-medium text-primary">Posted!</p>

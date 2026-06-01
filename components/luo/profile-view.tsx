@@ -90,7 +90,7 @@ export function ProfileView({
             />
           </div>
         </div>
-        <div className="p-6 text-center">
+        <div className="px-4 py-5 text-center sm:p-6">
           {editing ? (
             <form onSubmit={saveProfile} className="space-y-3 text-left">
               <input
@@ -159,13 +159,13 @@ export function ProfileView({
               <p className="text-xs text-on-surface-dim">Following</p>
             </div>
           </div>
-          <div className="mt-6 flex justify-center gap-3">
+          <div className="mt-6 flex w-full max-w-sm flex-col items-stretch justify-center gap-2 sm:mx-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             {isOwnProfile ? (
               !editing && (
                 <button
                   type="button"
                   onClick={() => setEditing(true)}
-                  className="rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary"
+                  className="min-h-11 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary"
                 >
                   Edit profile
                 </button>
@@ -176,7 +176,7 @@ export function ProfileView({
                   type="button"
                   onClick={onFollow}
                   disabled={followLoading}
-                  className={`rounded-full px-6 py-2.5 text-sm font-bold ${
+                  className={`min-h-11 rounded-full px-6 py-2.5 text-sm font-bold ${
                     isFollowing
                       ? "border border-outline bg-surface-elevated text-on-surface"
                       : "bg-primary text-on-primary"
@@ -190,7 +190,7 @@ export function ProfileView({
                 </button>
                 <Link
                   href={`/messages?with=${user.username}`}
-                  className="rounded-full border border-primary/50 bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary"
+                  className="flex min-h-11 items-center justify-center rounded-full border border-primary/50 bg-primary/10 px-6 py-2.5 text-sm font-bold text-primary"
                 >
                   Message
                 </Link>
@@ -198,7 +198,7 @@ export function ProfileView({
             )}
             <Link
               href="/feed"
-              className="rounded-full border border-outline px-6 py-2.5 text-sm font-semibold text-on-surface-muted"
+              className="flex min-h-11 items-center justify-center rounded-full border border-outline px-6 py-2.5 text-sm font-semibold text-on-surface-muted"
             >
               Feed
             </Link>

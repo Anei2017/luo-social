@@ -79,7 +79,7 @@ export function AuthLayout({
 
         {/* Auth card column */}
         <div
-          className={`flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-8 lg:max-w-xl ${
+          className={`flex flex-1 flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-10 lg:max-w-xl ${
             backdropVariant === "sign-up"
               ? "lg:bg-background/20 lg:backdrop-blur-[1px]"
               : "lg:bg-background/40 lg:backdrop-blur-sm"
@@ -88,7 +88,7 @@ export function AuthLayout({
           <div className="mb-8 lg:hidden">
             <LuoLogo size="lg" href="/" />
           </div>
-          <div className="auth-clerk-root w-full max-w-[420px]">{children}</div>
+          <div className="auth-clerk-root w-full max-w-[420px] min-w-0">{children}</div>
         </div>
       </div>
     </div>

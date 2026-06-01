@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ui } from "@clerk/ui";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
@@ -18,10 +18,24 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#121212",
+};
+
 export const metadata: Metadata = {
   title: "LUO SOCIAL",
   description:
     "A modern African community social network — connect, share, and grow together.",
+  applicationName: "LUO SOCIAL",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "LUO SOCIAL",
+  },
+  formatDetection: { telephone: false },
 };
 
 export default function RootLayout({
@@ -39,7 +53,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${bricolage.variable} ${dmSans.variable} min-h-screen antialiased`}
+          className={`${bricolage.variable} ${dmSans.variable} min-h-screen-safe antialiased overflow-x-hidden`}
         >
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>

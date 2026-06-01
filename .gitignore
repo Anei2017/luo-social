@@ -46,3 +46,10 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Capacitor (optional local build outputs)
+android/.gradle/
+android/app/build/
+android/build/
+ios/App/Pods/
+ios/DerivedData/

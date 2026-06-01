@@ -47,7 +47,7 @@ export function LuoLogo({
         />
       </svg>
       {showText && variant === "light" && (
-        <span className="font-body text-lg font-semibold tracking-tight text-on-surface">
+        <span className="font-body hidden text-lg font-semibold tracking-tight text-on-surface min-[400px]:inline">
           LUO
         </span>
       )}

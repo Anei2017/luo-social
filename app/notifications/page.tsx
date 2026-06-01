@@ -25,9 +25,9 @@ function NotificationsContent() {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4">
-      <div className="card-dark flex items-center justify-between p-6">
-        <div>
-          <h1 className="text-2xl font-bold text-on-surface">Notifications</h1>
+      <div className="card-dark flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold text-on-surface sm:text-2xl">Notifications</h1>
           <p className="mt-1 text-sm text-on-surface-muted">
             Likes, comments, and new followers
           </p>
@@ -35,7 +35,7 @@ function NotificationsContent() {
         <button
           type="button"
           onClick={() => markAllRead()}
-          className="rounded-full border border-outline px-4 py-2 text-sm font-semibold text-on-surface-muted hover:text-on-surface"
+          className="min-h-11 w-full shrink-0 rounded-full border border-outline px-4 py-2.5 text-sm font-semibold text-on-surface-muted hover:text-on-surface sm:w-auto"
         >
           Mark all read
         </button>
@@ -55,7 +55,7 @@ function NotificationsContent() {
         {items?.map((item) => (
           <li
             key={item._id}
-            className={`flex items-start gap-4 p-4 ${item.read ? "" : "bg-primary/5"}`}
+            className={`flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:gap-4 ${item.read ? "" : "bg-primary/5"}`}
           >
             <Link
               href={

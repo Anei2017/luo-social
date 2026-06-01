@@ -79,14 +79,14 @@ export function CommentThread({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="w-full px-5 py-2 text-left text-xs font-semibold text-primary hover:bg-surface-elevated/50"
+          className="min-h-11 w-full px-4 py-3 text-left text-xs font-semibold text-primary hover:bg-surface-elevated/50 sm:px-5"
         >
           View all {comments?.length} comments
         </button>
       )}
 
       {shown && shown.length > 0 && (
-        <ul className="space-y-3 px-5 py-3">
+        <ul className="space-y-3 px-4 py-3 sm:px-5">
           {shown.map((c) => (
             <li key={c._id} className="flex gap-2">
               <Link
@@ -132,17 +132,17 @@ export function CommentThread({
         </ul>
       )}
 
-      <form onSubmit={submit} className="flex items-center gap-2 px-5 py-3">
+      <form onSubmit={submit} className="flex items-center gap-2 px-4 py-3 sm:px-5">
         <input
           ref={inputRef}
           name="comment"
           placeholder="Write a comment…"
-          className="font-body flex-1 rounded-full bg-surface-elevated px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-dim focus:outline-none focus:ring-2 focus:ring-primary/40"
+          className="font-body min-h-11 flex-1 rounded-full bg-surface-elevated px-4 py-2.5 text-base text-on-surface placeholder:text-on-surface-dim focus:outline-none focus:ring-2 focus:ring-primary/40 sm:text-sm"
         />
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-full bg-primary px-4 py-2 text-xs font-bold text-on-primary disabled:opacity-50"
+          className="min-h-11 shrink-0 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-on-primary disabled:opacity-50"
         >
           {submitting ? "…" : "Post"}
         </button>

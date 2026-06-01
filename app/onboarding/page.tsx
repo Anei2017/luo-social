@@ -63,7 +63,7 @@ export default function OnboardingPage() {
 
   return (
     <AuthLayout tagline="One last step — set up your creator profile.">
-      <div className="w-full max-w-md rounded-2xl border border-outline bg-surface/95 p-8 shadow-2xl backdrop-blur-md">
+      <div className="w-full max-w-md rounded-2xl border border-outline bg-surface/95 p-6 shadow-2xl backdrop-blur-md sm:p-8">
         <h1 className="text-center text-2xl font-bold text-on-surface">
           Welcome to LUO SOCIAL
         </h1>

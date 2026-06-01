@@ -53,7 +53,7 @@ function MessagesInbox() {
   const active = conversations?.find((c) => c._id === activeId);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl gap-4">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 md:flex-row">
       <aside
         className={`card-dark w-full shrink-0 overflow-hidden md:w-80 ${
           activeId ? "hidden md:block" : "block"
@@ -111,7 +111,7 @@ function MessagesInbox() {
         </Link>
       </aside>
 
-      <div className={`min-w-0 flex-1 ${activeId ? "block" : "hidden md:block"}`}>
+      <div className={`min-h-0 min-w-0 flex-1 ${activeId ? "block" : "hidden md:block"}`}>
         {active && active.other ? (
           <ChatThread
             conversationId={activeId!}
@@ -120,7 +120,7 @@ function MessagesInbox() {
             otherAvatar={active.other.avatarUrl}
           />
         ) : (
-          <div className="card-dark flex h-[min(70vh,640px)] flex-col items-center justify-center p-8 text-center">
+          <div className="card-dark flex min-h-[280px] flex-col items-center justify-center p-6 text-center sm:h-[min(70vh,640px)] sm:p-8">
             <Icon name="chat" className="mb-4 text-5xl text-on-surface-dim" />
             <p className="text-lg font-bold text-on-surface">Your messages</p>
             <p className="mt-2 max-w-sm text-sm text-on-surface-muted">

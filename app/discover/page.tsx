@@ -14,8 +14,8 @@ function DiscoverGrid() {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-4">
-      <div className="card-dark p-6">
-        <h1 className="text-2xl font-bold text-on-surface">Explore</h1>
+      <div className="card-dark p-4 sm:p-6">
+        <h1 className="text-xl font-bold text-on-surface sm:text-2xl">Explore</h1>
         <p className="mt-1 text-sm text-on-surface-muted">
           Discover creators and stories across LUO SOCIAL.
         </p>

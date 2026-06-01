@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ComposeLink } from "./compose-link";
 import { Icon } from "./icon";
 import { NotificationUnreadDot } from "./notification-unread";
 
 const items = [
   { href: "/feed", icon: "home", label: "Home" },
   { href: "/messages", icon: "chat", label: "Chat" },
-  { href: "/feed#compose", icon: "add_circle", label: "Post", accent: true },
+  { href: "/feed", icon: "add_circle", label: "Post", accent: true },
   { href: "/notifications", icon: "notifications", label: "Alerts" },
   { href: "/profile", icon: "person", label: "Profile" },
 ] as const;
@@ -16,8 +17,8 @@ const items = [
 export function MobileNav() {
   const pathname = usePathname();
   return (
-    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-outline-soft bg-surface px-2 pb-safe md:hidden">
-      <div className="flex h-16 items-center justify-around">
+    <nav className="fixed bottom-0 left-0 z-50 w-full border-t border-outline-soft bg-surface/95 px-safe pb-safe backdrop-blur-md md:hidden">
+      <div className="flex h-[3.75rem] items-center justify-around sm:h-16">
         {items.map((item) => {
           const active =
             pathname === item.href ||
@@ -26,27 +27,26 @@ export function MobileNav() {
             (item.icon === "person" && pathname.startsWith("/profile"));
           if ("accent" in item && item.accent) {
             return (
-              <Link
+              <ComposeLink
                 key={item.label}
-                href={item.href}
                 className="flex -mt-4 h-12 w-12 items-center justify-center rounded-full bg-primary text-on-primary shadow-lg"
                 aria-label="Create post"
               >
                 <Icon name={item.icon} className="text-2xl" />
-              </Link>
+              </ComposeLink>
             );
           }
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`relative flex flex-col items-center gap-0.5 ${
+              className={`touch-target relative flex min-w-[3.5rem] flex-col items-center justify-center gap-0.5 px-1 ${
                 active ? "text-primary" : "text-on-surface-muted"
               }`}
             >
               <Icon name={item.icon} filled={active && item.icon === "home"} />
               {item.icon === "notifications" && <NotificationUnreadDot />}
-              <span className="text-[10px] font-medium">{item.label}</span>
+              <span className="max-w-full truncate text-[10px] font-medium">{item.label}</span>
             </Link>
           );
         })}
