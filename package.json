@@ -1,19 +1,24 @@
 {
-  "name": "ghost-2",
+  "name": "luo-social",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "stitch:export": "node scripts/export-stitch.mjs"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.4.2",
+    "@clerk/ui": "^1.14.0",
+    "convex": "^1.39.1",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@google/stitch-sdk": "^0.3.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

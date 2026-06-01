@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Inspired by Social Media Platform for Artists — Dribbble */
+@theme {
+  --color-background: #121212;
+  --color-surface: #1e1e1e;
+  --color-surface-elevated: #252525;
+  --color-surface-input: #2a2a2a;
+  --color-primary: #efff00;
+  --color-on-primary: #121212;
+  --color-on-surface: #ffffff;
+  --color-on-surface-muted: #9ca3af;
+  --color-on-surface-dim: #6b7280;
+  --color-outline: #333333;
+  --color-outline-soft: #2a2a2a;
+  --color-accent-green: #22c55e;
+  --color-accent-blue: #3b82f6;
+  --color-accent-pink: #ec4899;
+  --color-verified: #3b82f6;
+  --color-error: #ef4444;
+
+  --font-headline: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+  --radius-pill: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@utility font-headline {
+  font-family: var(--font-headline);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@utility font-body {
+  font-family: var(--font-body);
+}
+
+@utility font-label {
+  font-family: var(--font-label);
+}
+
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+@utility card-dark {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+}
+
+/* Landing wildlife — shift sepia art toward LUO dark + #efff00 */
+@utility landing-wildlife-themed {
+  filter: brightness(0.68) contrast(1.12) saturate(0.42) sepia(0.35) hue-rotate(18deg);
+}
+
+/* Auth mask art — warm tan illustration → LUO dark + yellow */
+@utility auth-mask-themed {
+  filter: brightness(0.58) contrast(1.08) saturate(0.5) sepia(0.25) hue-rotate(12deg);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+/* Clerk "Development mode" — match sign-up button yellow */
+.auth-clerk-root .cl-card {
+  position: relative;
+}
+
+.auth-clerk-root .cl-card::before {
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(239, 255, 0, 0.07),
+    rgba(239, 255, 0, 0.07) 6px,
+    rgba(239, 255, 0, 0.12) 6px,
+    rgba(239, 255, 0, 0.12) 12px
+  ) !important;
+}
+
+.auth-clerk-root .cl-card > div:first-child {
+  color: #efff00 !important;
+  font-weight: 600 !important;
+  font-size: 0.8125rem !important;
+}
+
+/* Yellow profile arches */
+.profile-arches {
+  position: relative;
+}
+
+.profile-arches::before,
+.profile-arches::after {
+  content: "";
+  position: absolute;
+  border: 3px solid var(--color-primary);
+  border-bottom: none;
+  border-radius: 120px 120px 0 0;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.profile-arches::before {
+  width: 140px;
+  height: 70px;
+  top: 8px;
+  opacity: 0.35;
+}
+
+.profile-arches::after {
+  width: 110px;
+  height: 55px;
+  top: 20px;
+  opacity: 0.55;
 }
