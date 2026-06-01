@@ -10,6 +10,12 @@ export function formatConvexError(err: unknown): string {
     if (msg.includes("Could not find") && msg.includes("function")) {
       return "Backend out of date. Run: npx convex dev (in a second terminal).";
     }
+    if (msg.includes("timed out") || msg.includes("Save timed out")) {
+      return msg;
+    }
+    if (msg.includes("Username already taken")) {
+      return "That username is taken. Pick another one.";
+    }
     if (msg.includes("Server Error") || msg.includes("ArgumentValidationError")) {
       return "Database sync needed. Run: npx convex dev";
     }
