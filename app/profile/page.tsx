@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/luo/app-shell";
-import { EnsureProfile } from "@/components/luo/ensure-profile";
 import { ProfileView } from "@/components/luo/profile-view";
 import type { ConvexUser } from "@/lib/types";
 
@@ -33,9 +32,7 @@ function OwnProfile() {
 export default function ProfilePage() {
   return (
     <AppShell>
-      <EnsureProfile>
-        <OwnProfile />
-      </EnsureProfile>
+      <OwnProfile />
     </AppShell>
   );
 }

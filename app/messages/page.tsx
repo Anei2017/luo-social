@@ -9,7 +9,6 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { AppShell } from "@/components/luo/app-shell";
 import { ChatThread } from "@/components/luo/chat-thread";
-import { EnsureProfile } from "@/components/luo/ensure-profile";
 import { avatarUrl } from "@/lib/avatar";
 import { Icon } from "@/components/luo/icon";
 
@@ -136,15 +135,13 @@ function MessagesInbox() {
 export default function MessagesPage() {
   return (
     <AppShell>
-      <EnsureProfile>
-        <Suspense
-          fallback={
-            <p className="py-12 text-center text-on-surface-muted">Loading messages…</p>
-          }
-        >
-          <MessagesInbox />
-        </Suspense>
-      </EnsureProfile>
+      <Suspense
+        fallback={
+          <p className="py-12 text-center text-on-surface-muted">Loading messages…</p>
+        }
+      >
+        <MessagesInbox />
+      </Suspense>
     </AppShell>
   );
 }

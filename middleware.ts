@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
+  "/api/env-check",
 ]);
 
 export default clerkMiddleware(

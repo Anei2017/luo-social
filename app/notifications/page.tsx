@@ -6,7 +6,6 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { AppShell } from "@/components/luo/app-shell";
-import { EnsureProfile } from "@/components/luo/ensure-profile";
 import { avatarUrl } from "@/lib/avatar";
 
 function timeAgo(ts: number) {
@@ -113,9 +112,7 @@ function NotificationsContent() {
 export default function NotificationsPage() {
   return (
     <AppShell>
-      <EnsureProfile>
-        <NotificationsContent />
-      </EnsureProfile>
+      <NotificationsContent />
     </AppShell>
   );
 }

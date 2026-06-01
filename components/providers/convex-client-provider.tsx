@@ -8,16 +8,22 @@ import { ReactNode, useMemo } from "react";
 function ConvexMissingBanner() {
   return (
     <div className="border-b border-primary/40 bg-primary/10 px-4 py-3 text-center text-sm text-on-surface">
-      <strong>Database not connected.</strong> Add{" "}
-      <code className="text-primary">NEXT_PUBLIC_CONVEX_URL</code> to{" "}
-      <code className="text-primary">.env.local</code>, then run{" "}
-      <code className="text-primary">npx convex dev</code>.
+      <strong>Database not connected.</strong> Set{" "}
+      <code className="text-primary">NEXT_PUBLIC_CONVEX_URL</code> in Vercel →
+      Environment Variables, then <strong>Redeploy</strong> (must rebuild).
     </div>
   );
 }
 
-export function ConvexClientProvider({ children }: { children: ReactNode }) {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+export function ConvexClientProvider({
+  children,
+  convexUrl,
+}: {
+  children: ReactNode;
+  /** Passed from server so Vercel runtime env is always used */
+  convexUrl?: string;
+}) {
+  const url = convexUrl ?? process.env.NEXT_PUBLIC_CONVEX_URL;
 
   const client = useMemo(() => {
     if (!url) return null;

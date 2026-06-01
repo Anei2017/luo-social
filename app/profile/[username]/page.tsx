@@ -4,7 +4,6 @@ import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/luo/app-shell";
-import { EnsureProfile } from "@/components/luo/ensure-profile";
 import { ProfileView } from "@/components/luo/profile-view";
 import type { ConvexUser } from "@/lib/types";
 
@@ -40,9 +39,7 @@ function ProfileByUsername() {
 export default function UserProfilePage() {
   return (
     <AppShell>
-      <EnsureProfile>
-        <ProfileByUsername />
-      </EnsureProfile>
+      <ProfileByUsername />
     </AppShell>
   );
 }

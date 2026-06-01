@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/luo/app-shell";
-import { EnsureProfile } from "@/components/luo/ensure-profile";
 import type { DiscoverPost } from "@/lib/types";
 import { avatarUrl } from "@/lib/avatar";
 
@@ -89,9 +88,7 @@ function DiscoverGrid() {
 export default function DiscoverPage() {
   return (
     <AppShell>
-      <EnsureProfile>
-        <DiscoverGrid />
-      </EnsureProfile>
+      <DiscoverGrid />
     </AppShell>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ui } from "@clerk/ui";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
-import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
+import { ConvexRoot } from "@/components/providers/convex-root";
 import { clerkAuthAppearance } from "@/components/luo/auth-layout";
 import "./globals.css";
 
@@ -55,7 +55,7 @@ export default function RootLayout({
         <body
           className={`${bricolage.variable} ${dmSans.variable} min-h-screen-safe antialiased overflow-x-hidden`}
         >
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexRoot>{children}</ConvexRoot>
         </body>
       </html>
     </ClerkProvider>
