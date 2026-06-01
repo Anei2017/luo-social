@@ -20,10 +20,22 @@ export default defineSchema({
     ),
     isVerified: v.optional(v.boolean()),
     proudLuo: v.optional(v.boolean()),
+    email: v.optional(v.string()),
+    role: v.optional(
+      v.union(
+        v.literal("member"),
+        v.literal("moderator"),
+        v.literal("super_admin"),
+      ),
+    ),
+    banned: v.optional(v.boolean()),
+    banReason: v.optional(v.string()),
+    suspendedUntil: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_clerk", ["clerkId"])
-    .index("by_username", ["username"]),
+    .index("by_username", ["username"])
+    .index("by_role", ["role"]),
 
   posts: defineTable({
     authorId: v.id("users"),
@@ -224,9 +236,31 @@ export default defineSchema({
     reporterId: v.id("users"),
     targetUserId: v.optional(v.id("users")),
     postId: v.optional(v.id("posts")),
+    commentId: v.optional(v.id("comments")),
     reason: v.string(),
+    status: v.union(v.literal("pending"), v.literal("reviewed")),
+    reviewedAt: v.optional(v.number()),
+    reviewedBy: v.optional(v.id("users")),
+    adminNote: v.optional(v.string()),
     createdAt: v.number(),
-  }),
+  })
+    .index("by_status", ["status", "createdAt"]),
+
+  appSettings: defineTable({
+    key: v.literal("global"),
+    communityRules: v.string(),
+    announcementBanner: v.optional(v.string()),
+    features: v.object({
+      marketplace: v.boolean(),
+      jobs: v.boolean(),
+      events: v.boolean(),
+      groups: v.boolean(),
+      reels: v.boolean(),
+      voiceRooms: v.boolean(),
+    }),
+    updatedAt: v.number(),
+    updatedBy: v.optional(v.id("users")),
+  }).index("by_key", ["key"]),
 
   listings: defineTable({
     authorId: v.id("users"),

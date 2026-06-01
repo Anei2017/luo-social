@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icon } from "./icon";
 import { ComposeLink } from "./compose-link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationUnreadCount } from "./notification-unread";
 import { FEEDS_PATH } from "@/lib/feeds-path";
 import { REELS_PATH } from "@/lib/reels-path";
@@ -145,6 +146,7 @@ export function TopNav() {
             <ComposeLink className="hidden rounded-full bg-primary px-3 py-2 text-sm font-bold text-on-primary sm:inline-flex sm:px-4 sm:py-2">
               Post
             </ComposeLink>
+            <ThemeToggle />
             <UserButton
               appearance={{
                 elements: { avatarBox: "h-8 w-8 sm:h-9 sm:w-9" },

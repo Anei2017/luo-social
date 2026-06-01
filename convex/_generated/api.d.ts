@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as admin from "../admin.js";
+import type * as adminAuth from "../adminAuth.js";
 import type * as comments from "../comments.js";
 import type * as events from "../events.js";
 import type * as files from "../files.js";
@@ -35,6 +37,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  admin: typeof admin;
+  adminAuth: typeof adminAuth;
   comments: typeof comments;
   events: typeof events;
   files: typeof files;

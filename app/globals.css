@@ -4,24 +4,67 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Inspired by Social Media Platform for Artists — Dribbble */
+/* ——— Luo Social semantic tokens (light = :root, dark = .dark) ——— */
+:root {
+  --luo-background: #f8f4f0;
+  --luo-surface: #ffffff;
+  --luo-surface-elevated: #faf6f0;
+  --luo-surface-input: #f3ede6;
+  --luo-primary: #f97316;
+  --luo-on-primary: #ffffff;
+  --luo-on-surface: #1f1f1f;
+  --luo-on-surface-muted: #57534e;
+  --luo-on-surface-dim: #78716c;
+  --luo-outline: #e8dfd4;
+  --luo-outline-soft: #f0e8de;
+  --luo-accent-green: #15803d;
+  --luo-accent-blue: #2563eb;
+  --luo-accent-pink: #db2777;
+  --luo-verified: #2563eb;
+  --luo-error: #dc2626;
+  --luo-earth: #92400e;
+  --luo-card-shadow: 0 4px 24px -4px rgba(120, 80, 40, 0.12);
+}
+
+.dark {
+  --luo-background: #0f0f0f;
+  --luo-surface: #1a1a1a;
+  --luo-surface-elevated: #222222;
+  --luo-surface-input: #2a2a2a;
+  --luo-primary: #f97316;
+  --luo-on-primary: #0f0f0f;
+  --luo-on-surface: #fafaf9;
+  --luo-on-surface-muted: #a8a29e;
+  --luo-on-surface-dim: #78716c;
+  --luo-outline: #2e2a26;
+  --luo-outline-soft: #252220;
+  --luo-accent-green: #4ade80;
+  --luo-accent-blue: #3b82f6;
+  --luo-accent-pink: #ec4899;
+  --luo-verified: #3b82f6;
+  --luo-error: #ef4444;
+  --luo-earth: #d97706;
+  --luo-card-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.45);
+}
+
 @theme {
-  --color-background: #121212;
-  --color-surface: #1e1e1e;
-  --color-surface-elevated: #252525;
-  --color-surface-input: #2a2a2a;
-  --color-primary: #efff00;
-  --color-on-primary: #121212;
-  --color-on-surface: #ffffff;
-  --color-on-surface-muted: #9ca3af;
-  --color-on-surface-dim: #6b7280;
-  --color-outline: #333333;
-  --color-outline-soft: #2a2a2a;
-  --color-accent-green: #22c55e;
-  --color-accent-blue: #3b82f6;
-  --color-accent-pink: #ec4899;
-  --color-verified: #3b82f6;
-  --color-error: #ef4444;
+  --color-background: var(--luo-background);
+  --color-surface: var(--luo-surface);
+  --color-surface-elevated: var(--luo-surface-elevated);
+  --color-surface-input: var(--luo-surface-input);
+  --color-primary: var(--luo-primary);
+  --color-on-primary: var(--luo-on-primary);
+  --color-on-surface: var(--luo-on-surface);
+  --color-on-surface-muted: var(--luo-on-surface-muted);
+  --color-on-surface-dim: var(--luo-on-surface-dim);
+  --color-outline: var(--luo-outline);
+  --color-outline-soft: var(--luo-outline-soft);
+  --color-accent-green: var(--luo-accent-green);
+  --color-accent-blue: var(--luo-accent-blue);
+  --color-accent-pink: var(--luo-accent-pink);
+  --color-verified: var(--luo-verified);
+  --color-error: var(--luo-error);
+  --color-earth: var(--luo-earth);
 
   --font-headline: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
@@ -75,9 +118,16 @@
   min-width: 2.75rem;
 }
 
+@utility card-surface {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--luo-card-shadow);
+}
+
 html {
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
+  color-scheme: light dark;
 }
 
 html,
@@ -88,31 +138,52 @@ body {
 body {
   min-height: 100dvh;
   min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.35s ease,
+    color 0.25s ease;
+}
+
+/* Smooth theme transitions on surfaces (avoid animating every descendant) */
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.2s ease,
+    fill 0.2s ease,
+    stroke 0.2s ease,
+    box-shadow 0.35s ease;
 }
 
 @utility card-dark {
   background-color: var(--color-surface);
   border-radius: var(--radius-card);
+  box-shadow: var(--luo-card-shadow);
 }
 
-/* Landing wildlife — shift sepia art toward LUO dark + #efff00 */
+/* Landing wildlife — warm art treatment per theme */
 @utility landing-wildlife-themed {
+  filter: brightness(1.02) contrast(1.05) saturate(0.92) sepia(0.12);
+}
+
+.dark .landing-wildlife-themed {
   filter: brightness(0.68) contrast(1.12) saturate(0.42) sepia(0.35) hue-rotate(18deg);
 }
 
-/* Auth mask art — warm tan illustration → LUO dark + yellow */
 @utility auth-mask-themed {
+  filter: brightness(1.05) contrast(1.02) saturate(0.85) sepia(0.08);
+}
+
+.dark .auth-mask-themed {
   filter: brightness(0.58) contrast(1.08) saturate(0.5) sepia(0.25) hue-rotate(12deg);
 }
 
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-surface);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Clerk "Development mode" — match sign-up button yellow */
+/* Clerk dev banner — warm orange accent */
 .auth-clerk-root .cl-card {
   position: relative;
 }
@@ -120,20 +191,19 @@ body {
 .auth-clerk-root .cl-card::before {
   background: repeating-linear-gradient(
     -45deg,
-    rgba(239, 255, 0, 0.07),
-    rgba(239, 255, 0, 0.07) 6px,
-    rgba(239, 255, 0, 0.12) 6px,
-    rgba(239, 255, 0, 0.12) 12px
+    rgba(249, 115, 22, 0.06),
+    rgba(249, 115, 22, 0.06) 6px,
+    rgba(249, 115, 22, 0.1) 6px,
+    rgba(249, 115, 22, 0.1) 12px
   ) !important;
 }
 
 .auth-clerk-root .cl-card > div:first-child {
-  color: #efff00 !important;
+  color: var(--luo-primary) !important;
   font-weight: 600 !important;
   font-size: 0.8125rem !important;
 }
 
-/* Yellow profile arches */
 .profile-arches {
   position: relative;
 }
@@ -164,6 +234,7 @@ body {
   opacity: 0.55;
 }
 
+/* shadcn — aligned with Luo tokens */
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
@@ -206,72 +277,67 @@ body {
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: var(--luo-background);
+  --foreground: var(--luo-on-surface);
+  --card: var(--luo-surface);
+  --card-foreground: var(--luo-on-surface);
+  --popover: var(--luo-surface);
+  --popover-foreground: var(--luo-on-surface);
+  --primary: var(--luo-primary);
+  --primary-foreground: var(--luo-on-primary);
+  --secondary: var(--luo-surface-elevated);
+  --secondary-foreground: var(--luo-on-surface);
+  --muted: var(--luo-surface-elevated);
+  --muted-foreground: var(--luo-on-surface-muted);
+  --accent: var(--luo-surface-elevated);
+  --accent-foreground: var(--luo-on-surface);
+  --destructive: var(--luo-error);
+  --border: var(--luo-outline);
+  --input: var(--luo-surface-input);
+  --ring: var(--luo-primary);
+  --chart-1: #f97316;
+  --chart-2: #15803d;
+  --chart-3: #92400e;
+  --chart-4: #2563eb;
+  --chart-5: #78716c;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: var(--luo-surface);
+  --sidebar-foreground: var(--luo-on-surface);
+  --sidebar-primary: var(--luo-primary);
+  --sidebar-primary-foreground: var(--luo-on-primary);
+  --sidebar-accent: var(--luo-surface-elevated);
+  --sidebar-accent-foreground: var(--luo-on-surface);
+  --sidebar-border: var(--luo-outline);
+  --sidebar-ring: var(--luo-primary);
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #ffffff;
-  --card: #1e1e1e;
-  --card-foreground: #ffffff;
-  --popover: #1e1e1e;
-  --popover-foreground: #ffffff;
-  --primary: #efff00;
-  --primary-foreground: #121212;
-  --secondary: #252525;
-  --secondary-foreground: #ffffff;
-  --muted: #252525;
-  --muted-foreground: #9ca3af;
-  --accent: #252525;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --border: #333333;
-  --input: #2a2a2a;
-  --ring: #efff00;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #1e1e1e;
-  --sidebar-foreground: #ffffff;
-  --sidebar-primary: #efff00;
-  --sidebar-primary-foreground: #121212;
-  --sidebar-accent: #252525;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333333;
-  --sidebar-ring: #efff00;
+  --background: var(--luo-background);
+  --foreground: var(--luo-on-surface);
+  --card: var(--luo-surface);
+  --card-foreground: var(--luo-on-surface);
+  --popover: var(--luo-surface);
+  --popover-foreground: var(--luo-on-surface);
+  --primary: var(--luo-primary);
+  --primary-foreground: var(--luo-on-primary);
+  --secondary: var(--luo-surface-elevated);
+  --secondary-foreground: var(--luo-on-surface);
+  --muted: var(--luo-surface-elevated);
+  --muted-foreground: var(--luo-on-surface-muted);
+  --accent: var(--luo-surface-elevated);
+  --accent-foreground: var(--luo-on-surface);
+  --destructive: var(--luo-error);
+  --border: var(--luo-outline);
+  --input: var(--luo-surface-input);
+  --ring: var(--luo-primary);
+  --sidebar: var(--luo-surface);
+  --sidebar-foreground: var(--luo-on-surface);
+  --sidebar-primary: var(--luo-primary);
+  --sidebar-primary-foreground: var(--luo-on-primary);
+  --sidebar-accent: var(--luo-surface-elevated);
+  --sidebar-accent-foreground: var(--luo-on-surface);
+  --sidebar-border: var(--luo-outline);
+  --sidebar-ring: var(--luo-primary);
 }
 
 @layer base {

@@ -45,5 +45,8 @@ export type ConvexUser = {
   language?: string;
   isVerified?: boolean;
   proudLuo?: boolean;
+  email?: string;
+  role?: "member" | "moderator" | "super_admin";
+  banned?: boolean;
   createdAt?: number;
 };

@@ -76,6 +76,7 @@ export const report = mutation({
       targetUserId: args.targetUserId,
       postId: args.postId,
       reason,
+      status: "pending",
       createdAt: Date.now(),
     });
     return { ok: true };

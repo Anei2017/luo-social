@@ -70,6 +70,8 @@ export const upsertFromClerk = mutation({
       hometown: args.hometown?.trim() || undefined,
       language: args.language ?? "both",
       skills: [],
+      email: identity.email,
+      role: "member",
       createdAt: Date.now(),
     });
   },

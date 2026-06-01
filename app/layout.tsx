@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
-import { ui } from "@clerk/ui";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { ConvexRoot } from "@/components/providers/convex-root";
-import { UiProviders } from "@/components/providers/ui-providers";
-import { clerkAuthAppearance } from "@/components/luo/auth-layout";
+import { AppProviders } from "@/components/providers/app-providers";
+import { luoPalette } from "@/lib/theme";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +22,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#121212",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: luoPalette.light.background },
+    { media: "(prefers-color-scheme: dark)", color: luoPalette.dark.background },
+  ],
 };
 
 export const metadata: Metadata = {
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   applicationName: "LUO SOCIAL",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "LUO SOCIAL",
   },
   formatDetection: { telephone: false },
@@ -46,17 +47,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider appearance={clerkAuthAppearance} ui={ui}>
-      <html
-        lang="en"
-        className={cn("dark font-sans", dmSans.variable, bricolage.variable)}
-      >
-        <body className="min-h-screen-safe overflow-x-hidden antialiased font-body">
-          <UiProviders>
-            <ConvexRoot>{children}</ConvexRoot>
-          </UiProviders>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("font-sans", dmSans.variable, bricolage.variable)}
+    >
+      <body className="min-h-screen-safe overflow-x-hidden antialiased font-body">
+        <AppProviders>
+          <ConvexRoot>{children}</ConvexRoot>
+        </AppProviders>
+      </body>
+    </html>
   );
 }

@@ -34,17 +34,12 @@ export function LuoLogo({
       >
         <path
           d="M8 32 L20 8 L32 32 Z"
-          stroke={variant === "light" ? "#fff" : "#efff00"}
+          className="stroke-primary"
           strokeWidth="2.5"
           fill="none"
           strokeLinejoin="round"
         />
-        <circle
-          cx="20"
-          cy="26"
-          r="4"
-          fill={variant === "light" ? "#efff00" : "#efff00"}
-        />
+        <circle cx="20" cy="26" r="4" className="fill-primary" />
       </svg>
       {showText && variant === "light" && (
         <span className="font-body hidden text-lg font-semibold tracking-tight text-on-surface min-[400px]:inline">

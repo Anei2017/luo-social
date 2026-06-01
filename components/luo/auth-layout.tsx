@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getClerkAppearance } from "@/lib/clerk-appearance";
 import { AuthBackdrop, type AuthBackdropVariant } from "./auth-backdrop";
 import { LuoLogo } from "./logo";
 
@@ -95,30 +96,5 @@ export function AuthLayout({
   );
 }
 
-export const clerkAuthAppearance = {
-  variables: {
-    colorBackground: "#1e1e1e",
-    colorInputBackground: "#2a2a2a",
-    colorText: "#ffffff",
-    colorPrimary: "#efff00",
-    colorTextOnPrimaryBackground: "#121212",
-    colorNeutral: "#9ca3af",
-    colorWarning: "#efff00",
-    borderRadius: "0.75rem",
-  },
-  elements: {
-    card: "bg-surface/95 border border-outline shadow-2xl rounded-2xl backdrop-blur-md",
-    headerTitle: "text-on-surface",
-    headerSubtitle: "text-on-surface-muted",
-    socialButtonsBlockButton:
-      "bg-surface-elevated border border-outline text-on-surface hover:bg-surface-input",
-    formButtonPrimary: "bg-primary text-on-primary font-bold",
-    footerActionLink: "text-primary hover:text-primary/80",
-    footerActionText: "text-on-surface-muted",
-    formFieldLabel: "text-on-surface-muted",
-    identityPreviewText: "text-on-surface",
-    formResendCodeLink: "text-primary",
-    alertText: "text-primary",
-    badge: "bg-primary/15 text-primary border-primary/30",
-  },
-} as const;
+/** @deprecated Prefer ClerkProvider in AppProviders; kept for pages that pass appearance explicitly */
+export const clerkAuthAppearance = getClerkAppearance("dark");

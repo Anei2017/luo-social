@@ -257,7 +257,7 @@ export function ProfilePage({
       />
 
       {/* ——— Hero: cover + avatar ——— */}
-      <section className="relative overflow-hidden rounded-none border border-amber-900/20 bg-surface shadow-xl sm:rounded-2xl">
+      <section className="relative overflow-hidden rounded-none border border-amber-900/20 bg-surface shadow-[var(--luo-card-shadow)] sm:rounded-2xl dark:border-amber-900/20">
         <div className="relative aspect-[820/312] max-h-[220px] w-full sm:max-h-[312px]">
           {coverSrc ? (
             <Image
@@ -271,12 +271,12 @@ export function ProfilePage({
             />
           ) : (
             <div
-              className="absolute inset-0 bg-gradient-to-br from-amber-950 via-stone-900 to-emerald-950"
+              className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-50 to-emerald-100 dark:from-amber-950 dark:via-stone-900 dark:to-emerald-950"
               aria-hidden
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-[#121212]/50 to-amber-950/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-900/25 via-transparent to-emerald-900/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/40 to-amber-200/30 dark:from-background dark:via-background/50 dark:to-amber-950/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/15 via-transparent to-emerald-600/10 dark:from-orange-900/25 dark:to-emerald-900/20" />
 
           {isOwnProfile && (
             <>
@@ -308,7 +308,7 @@ export function ProfilePage({
         <div className="relative px-4 sm:px-8">
           <div className="absolute -top-[90px] left-4 z-20 sm:-top-[90px] sm:left-8">
             <div className="group relative">
-              <div className="relative size-[140px] overflow-hidden rounded-full border-[5px] border-white shadow-2xl ring-4 ring-amber-500/25 transition-transform duration-300 group-hover:scale-[1.02] sm:size-[180px]">
+              <div className="relative size-[140px] overflow-hidden rounded-full border-[5px] border-surface shadow-2xl ring-4 ring-primary/30 transition-transform duration-300 group-hover:scale-[1.02] sm:size-[180px]">
                 <Image
                   src={avatarSrc}
                   alt={user.displayName}
@@ -336,7 +336,7 @@ export function ProfilePage({
                     type="button"
                     onClick={images.openAvatarPicker}
                     disabled={images.uploadingAvatar}
-                    className="absolute right-1 bottom-1 flex size-11 items-center justify-center rounded-full border-[3px] border-white bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg transition hover:scale-105 active:scale-95"
+                    className="absolute right-1 bottom-1 flex size-11 items-center justify-center rounded-full border-[3px] border-surface bg-gradient-to-br from-primary to-orange-600 text-on-primary shadow-lg transition hover:scale-105 active:scale-95"
                     aria-label="Edit profile picture"
                   >
                     <Camera className="size-5" />
@@ -360,7 +360,7 @@ export function ProfilePage({
                     />
                   )}
                   {user.proudLuo && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500/25 to-orange-600/25 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-300 ring-1 ring-amber-500/40">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-primary/20 to-orange-600/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-earth ring-1 ring-primary/35 dark:text-amber-300">
                       <Flag className="size-3" />
                       Proud Luo
                     </span>
@@ -512,7 +512,7 @@ export function ProfilePage({
 
       {/* ——— Tabs ——— */}
       <nav
-        className="mt-5 flex gap-1 overflow-x-auto border-b border-amber-900/20 pb-px hide-scrollbar"
+        className="mt-5 flex gap-1 overflow-x-auto border-b border-outline pb-px hide-scrollbar"
         aria-label="Profile sections"
       >
         {PROFILE_TABS.map((tab) => {
@@ -526,8 +526,8 @@ export function ProfilePage({
               className={cn(
                 "flex min-h-11 shrink-0 items-center gap-2 border-b-2 px-3 py-3 text-sm font-semibold transition-colors sm:px-4",
                 active
-                  ? "border-amber-400 text-amber-300"
-                  : "border-transparent text-on-surface-muted hover:border-amber-900/40 hover:text-on-surface",
+                  ? "border-primary text-primary"
+                  : "border-transparent text-on-surface-muted hover:border-outline hover:text-on-surface",
               )}
             >
               <Icon className="size-4" />
@@ -730,8 +730,8 @@ function StatCard({
       className={cn(
         "rounded-2xl border px-3 py-4 text-center transition duration-300 hover:scale-[1.02] hover:shadow-md",
         accent === "emerald"
-          ? "border-emerald-800/30 bg-emerald-950/25 hover:border-emerald-600/40"
-          : "border-amber-800/25 bg-amber-950/20 hover:border-amber-600/35",
+          ? "border-emerald-200 bg-emerald-50/80 hover:border-emerald-400 dark:border-emerald-800/30 dark:bg-emerald-950/25 dark:hover:border-emerald-600/40"
+          : "border-orange-200 bg-orange-50/80 hover:border-primary/50 dark:border-amber-800/25 dark:bg-amber-950/20 dark:hover:border-amber-600/35",
       )}
     >
       <p className="text-xl font-bold tabular-nums text-on-surface sm:text-2xl">
@@ -746,7 +746,7 @@ function StatCard({
 
 function EmptyPanel({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-amber-900/30 bg-surface/60 p-10 text-center text-sm text-on-surface-muted">
+    <div className="card-surface rounded-2xl border border-dashed border-outline bg-surface/80 p-10 text-center text-sm text-on-surface-muted">
       {text}
     </div>
   );
