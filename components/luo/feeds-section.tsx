@@ -152,10 +152,10 @@ export function FeedsSection() {
       />
 
       <InfiniteFeed
+        key={feedRefreshKey}
         tab={tab}
         topic={topic}
         currentUserId={me?._id}
-        refreshKey={feedRefreshKey}
         emptyAction={
           tab === "friends" ? (
             <Link

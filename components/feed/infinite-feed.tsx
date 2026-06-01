@@ -2,13 +2,10 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { useQueryClient } from "@tanstack/react-query";
+import { usePaginatedQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import type { FeedPost } from "@/lib/types";
 import type { FeedTab } from "@/lib/posts-api";
-import {
-  flattenPostsPages,
-  useInfinitePosts,
-} from "@/hooks/use-infinite-posts";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { PostCard } from "@/components/luo/post-card";
 import { Icon } from "@/components/luo/icon";
@@ -18,77 +15,52 @@ export type InfiniteFeedProps = {
   topic?: string;
   currentUserId?: string;
   pageSize?: number;
-  /** Bump to refetch from page 1 (e.g. after creating a post) */
-  refreshKey?: number;
   emptyTitle?: string;
   emptyDescription?: React.ReactNode;
   emptyAction?: React.ReactNode;
 };
 
+/**
+ * Infinite feed via Convex usePaginatedQuery (same Clerk auth as the rest of the app).
+ * Avoids /api/posts server fetchQuery issues on Vercel.
+ */
 export function InfiniteFeed({
   tab,
   topic,
   currentUserId,
   pageSize = 15,
-  refreshKey = 0,
   emptyTitle,
   emptyDescription,
   emptyAction,
 }: InfiniteFeedProps) {
-  const queryClient = useQueryClient();
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useInfinitePosts({ tab, topic, pageSize });
+  const normalizedTopic = topic && topic !== "All" ? topic : undefined;
+
+  const { results, status, isLoading, loadMore } = usePaginatedQuery(
+    api.posts.feedPaginated,
+    { tab, topic: normalizedTopic },
+    { initialNumItems: pageSize },
+  );
+
+  const posts = (results ?? []) as FeedPost[];
+  const canLoadMore = status === "CanLoadMore";
+  const isFetchingMore = status === "LoadingMore";
 
   const { ref: sentinelRef, isIntersecting } = useIntersectionObserver({
     rootMargin: "240px",
-    disabled: !hasNextPage || isFetchingNextPage,
+    disabled: !canLoadMore || isFetchingMore,
   });
 
   useEffect(() => {
-    if (refreshKey > 0) {
-      void queryClient.invalidateQueries({ queryKey: ["posts", "infinite"] });
-      void refetch();
+    if (isIntersecting && canLoadMore && !isFetchingMore) {
+      loadMore(pageSize);
     }
-  }, [refreshKey, queryClient, refetch]);
+  }, [isIntersecting, canLoadMore, isFetchingMore, loadMore, pageSize]);
 
-  useEffect(() => {
-    if (isIntersecting && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
-    }
-  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  const posts = flattenPostsPages(data);
-
-  if (isLoading) {
+  if (status === "LoadingFirstPage" || isLoading) {
     return (
       <div className="flex flex-col items-center gap-2 py-12">
         <Icon name="progress_activity" className="animate-spin text-3xl text-primary" />
         <p className="text-sm text-on-surface-muted">Loading feed…</p>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="card-dark space-y-3 p-8 text-center">
-        <p className="text-sm text-error">
-          {error?.message ?? "Could not load posts."}
-        </p>
-        <button
-          type="button"
-          onClick={() => refetch()}
-          className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary"
-        >
-          Try again
-        </button>
       </div>
     );
   }
@@ -113,13 +85,16 @@ export function InfiniteFeed({
       {posts.map((post) => (
         <PostCard
           key={post._id}
-          post={post as FeedPost}
+          post={post}
           currentUserId={currentUserId}
         />
       ))}
 
-      <div ref={sentinelRef} className="flex min-h-16 flex-col items-center justify-center gap-2 py-4">
-        {isFetchingNextPage && (
+      <div
+        ref={sentinelRef}
+        className="flex min-h-16 flex-col items-center justify-center gap-2 py-4"
+      >
+        {isFetchingMore && (
           <>
             <Icon
               name="progress_activity"
@@ -128,7 +103,7 @@ export function InfiniteFeed({
             <p className="text-xs text-on-surface-muted">Loading more posts…</p>
           </>
         )}
-        {!hasNextPage && !isFetchingNextPage && (
+        {status === "Exhausted" && !isFetchingMore && (
           <p className="text-xs font-medium text-on-surface-dim">No more posts</p>
         )}
       </div>

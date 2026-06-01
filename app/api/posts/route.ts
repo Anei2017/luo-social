@@ -7,14 +7,29 @@ import type { FeedTab } from "@/lib/posts-api";
 
 const VALID_TABS = new Set<FeedTab>(["everyone", "friends", "following"]);
 
+async function convexAuthToken(
+  getToken: Awaited<ReturnType<typeof auth>>["getToken"],
+) {
+  try {
+    const convex = await getToken({ template: "convex" });
+    if (convex) return convex;
+  } catch {
+    /* Clerk "convex" JWT template may be missing — fall through */
+  }
+  try {
+    return (await getToken()) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function GET(req: Request) {
   const { userId, getToken } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const token =
-    (await getToken({ template: "convex" })) ?? (await getToken()) ?? undefined;
+  const token = await convexAuthToken(getToken);
 
   const { searchParams } = new URL(req.url);
   const cursor = searchParams.get("cursor");
@@ -30,20 +45,25 @@ export async function GET(req: Request) {
     ? (tabParam as FeedTab)
     : "everyone";
 
+  const paginationOpts = {
+    numItems: limit,
+    cursor: cursor || null,
+  };
+
   try {
     const result = authorId
       ? await fetchQuery(
           api.posts.byAuthorPaginated,
           {
             userId: authorId as Id<"users">,
-            paginationOpts: { numItems: limit, cursor: cursor || null },
+            paginationOpts,
           },
           { token },
         )
       : await fetchQuery(
           api.posts.feedPaginated,
           {
-            paginationOpts: { numItems: limit, cursor: cursor || null },
+            paginationOpts,
             tab,
             topic: topic && topic !== "All" ? topic : undefined,
           },
@@ -56,9 +76,39 @@ export async function GET(req: Request) {
       hasMore: !result.isDone,
     });
   } catch (err) {
-    console.error("[api/posts]", err);
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[api/posts]", message);
+
+    // Retry without auth if JWT is misconfigured (feed still works for public data)
+    if (token) {
+      try {
+        const result = authorId
+          ? await fetchQuery(api.posts.byAuthorPaginated, {
+              userId: authorId as Id<"users">,
+              paginationOpts,
+            })
+          : await fetchQuery(api.posts.feedPaginated, {
+              paginationOpts,
+              tab,
+              topic: topic && topic !== "All" ? topic : undefined,
+            });
+
+        return NextResponse.json({
+          posts: result.page,
+          nextCursor: result.isDone ? null : result.continueCursor,
+          hasMore: !result.isDone,
+        });
+      } catch (retryErr) {
+        console.error("[api/posts] retry", retryErr);
+      }
+    }
+
     return NextResponse.json(
-      { error: "Failed to load posts" },
+      {
+        error: "Failed to load posts",
+        detail:
+          process.env.NODE_ENV === "development" ? message : undefined,
+      },
       { status: 500 },
     );
   }

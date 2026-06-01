@@ -2,10 +2,9 @@
 
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import {
-  flattenProfilePosts,
-  useInfiniteProfilePosts,
-} from "@/hooks/use-infinite-profile-posts";
+import { usePaginatedQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 import { PostCard } from "@/components/luo/post-card";
 import type { FeedPost } from "@/lib/types";
@@ -16,56 +15,38 @@ type ProfilePostsInfiniteProps = {
   currentUserId?: string;
 };
 
-/** User posts tab with TanStack infinite scroll + intersection observer */
+/** Profile posts tab — Convex pagination (reliable Clerk auth on client) */
 export function ProfilePostsInfinite({
   userId,
   currentUserId,
 }: ProfilePostsInfiniteProps) {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useInfiniteProfilePosts(userId);
+  const { results, status, isLoading, loadMore } = usePaginatedQuery(
+    api.posts.byAuthorPaginated,
+    { userId: userId as Id<"users"> },
+    { initialNumItems: 12 },
+  );
+
+  const posts = (results ?? []) as FeedPost[];
+  const canLoadMore = status === "CanLoadMore";
+  const isFetchingMore = status === "LoadingMore";
 
   const { ref: sentinelRef, isIntersecting } = useIntersectionObserver({
     rootMargin: "280px",
-    disabled: !hasNextPage || isFetchingNextPage,
+    disabled: !canLoadMore || isFetchingMore,
   });
 
   useEffect(() => {
-    if (isIntersecting && hasNextPage && !isFetchingNextPage) {
-      void fetchNextPage();
+    if (isIntersecting && canLoadMore && !isFetchingMore) {
+      loadMore(12);
     }
-  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [isIntersecting, canLoadMore, isFetchingMore, loadMore]);
 
-  const posts = flattenProfilePosts(data);
-
-  if (isLoading) {
+  if (status === "LoadingFirstPage" || isLoading) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
           <Skeleton key={i} className="h-48 w-full rounded-2xl" />
         ))}
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="rounded-2xl border border-outline bg-surface p-8 text-center">
-        <p className="text-sm text-error">{error?.message ?? "Could not load posts."}</p>
-        <button
-          type="button"
-          onClick={() => refetch()}
-          className="mt-3 rounded-full bg-primary px-5 py-2 text-sm font-bold text-on-primary"
-        >
-          Try again
-        </button>
       </div>
     );
   }
@@ -83,7 +64,7 @@ export function ProfilePostsInfinite({
       {posts.map((post) => (
         <PostCard
           key={post._id}
-          post={post as FeedPost}
+          post={post}
           currentUserId={currentUserId}
         />
       ))}
@@ -91,13 +72,13 @@ export function ProfilePostsInfinite({
         ref={sentinelRef}
         className="flex min-h-14 flex-col items-center justify-center gap-2 py-4"
       >
-        {isFetchingNextPage && (
+        {isFetchingMore && (
           <>
             <Loader2 className="size-6 animate-spin text-primary" />
             <p className="text-xs text-on-surface-muted">Loading more posts…</p>
           </>
         )}
-        {!hasNextPage && !isFetchingNextPage && (
+        {status === "Exhausted" && !isFetchingMore && (
           <p className="text-xs font-medium text-on-surface-dim">No more posts</p>
         )}
       </div>
