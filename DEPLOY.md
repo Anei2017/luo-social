@@ -198,7 +198,7 @@ Update Google/Facebook OAuth redirect URIs to include production Clerk callbacks
 | Problem | Fix |
 |---------|-----|
 | “Not authenticated” on post | Signed in with Clerk but Convex JWT missing → check `CLERK_JWT_ISSUER_DOMAIN` in Convex |
-| Redirect loop | Clear cookies; ensure `/onboarding` is not listed as public in middleware |
+| Redirect loop | Clear cookies; ensure `/onboarding` is not listed as public in `proxy.ts` |
 | Build fails on Vercel | All `NEXT_PUBLIC_*` vars must be set in Vercel project settings |
 | Google/Facebook login fails | OAuth app in test mode / wrong redirect URI in Google or Meta console |
 | Empty feed | Create a post after onboarding; Convex dev must be running locally |
